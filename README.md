@@ -6,9 +6,9 @@ A beautiful wind chime simulator for your desktop.
 
 ## ✨ 特色
 
-- 🎼 **場景模板系統** — 三種風格一鍵切換：禪風冥想（和弦思維音階 ABAC）、Jazz Ambient（Melodic Minor）、鄉村花園（G 大調）
+- 🎼 **場景模板系統** — 四種風格一鍵切換：禪風冥想（和弦思維 Cmaj7/Dm7/Am7）、鄉村花園（G 大調 Gmaj7/Am7/D7）、Jazz Ambient（Melodic Minor CmM7/Fm7/Dm7b5）、星空夜語（D Dorian Dm7/Gmaj7/Em7）
 - 🌬️ **自然風效果** — 兩層 Perlin Noise 疊加（週期 8s + 3s），S 曲線對比度拉伸，風速平滑變化驅動敲擊密度與力度
-- 🎵 **五種音色**：金屬、玻璃、陶磁、木質、撥弦（Karplus-Strong 物理模擬）
+- 🎵 **五種音色**：金屬、玻璃、陶磁、木質、敲弦（FMSynth 模擬）
 - 🌊 **四個段落**：寂靜 → 風起 → 潮湧 → 餘韻，自動循環
 - 🌟 **動態光球粒子**：隨音樂波動，視聽一體的沉浸體驗
 - 📦 **離線使用**：單一 HTML 檔，無需安裝或網路連線

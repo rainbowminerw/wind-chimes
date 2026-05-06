@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎐 風鈴 v0.08</title>
+<title>🎐 風鈴 v0.09</title>
 <style>
 /* ============================================================
    wind-chime.html — 風鈴模擬器
@@ -377,8 +377,9 @@ select:focus {
       <span class="selector-label">風格</span>
       <select id="templateSelect" style="flex:1; min-width:0;">
         <option value="zen">🧘 禪風冥想</option>
-        <option value="jazz">🎷 Jazz Ambient</option>
         <option value="garden">🌻 鄉村花園</option>
+        <option value="jazz">🎷 Jazz Ambient</option>
+        <option value="star">🌌 星空夜語</option>
       </select>
     </div>
   </div>
@@ -390,7 +391,7 @@ select:focus {
       <select id="voiceSelect" style="flex:1; min-width:0;">
         <option value="glass">🔮 玻璃風鈴</option>
         <option value="ceramic">🏺 陶磁風鈴</option>
-        <option value="pluck">🎸 撥弦風鈴</option>
+        <option value="pluck">🎸 敲弦風鈴</option>
         <option value="wood">🪵 木質風鈴</option>
         <option value="metal">🎵 金屬風鈴</option>
       </select>
@@ -504,6 +505,30 @@ const ZEN_CMAJ7_HIGH = buildScale([261.63, 329.63, 392.00, 493.88, 523.25, 659.2
 const ZEN_DM7        = buildScale([146.83, 174.61, 220.00, 261.63, 293.66, 349.23, 440.00]);  // D3 F3 A3 C4 D4 F4 A4
 const ZEN_AM7        = buildScale([220.00, 261.63, 329.63, 392.00, 440.00, 523.25, 659.25]);  // A3 C4 E4 G4 A4 C5 E5
 
+// ── 鄉村花園 — G 大調 ─────────────────────────────────
+// Gmaj7: G B D F# → Am7: A C E G → D7: D F# A C
+// ABAC：Gmaj7(低) → Am7 → Gmaj7(高) → D7
+const GDN_GMAJ7_LOW  = buildScale([196.00, 246.94, 293.66, 369.99, 392.00, 493.88, 587.33]);  // G3 B3 D4 F#4 G4 B4 D5
+const GDN_AM7        = buildScale([220.00, 261.63, 329.63, 392.00, 440.00, 523.25, 659.25]);  // A3 C4 E4 G4 A4 C5 E5
+const GDN_GMAJ7_HIGH = buildScale([392.00, 493.88, 587.33, 739.99, 783.99, 987.77, 1174.66]); // G4 B4 D5 F#5 G5 B5 D6
+const GDN_D7         = buildScale([146.83, 185.00, 220.00, 261.63, 293.66, 369.99, 440.00]);  // D3 F#3 A3 C4 D4 F#4 A4
+
+// ── Jazz Ambient — C Melodic Minor ────────────────────
+// CmM7: C Eb G B → Fm7: F Ab C Eb → Dm7b5: D F Ab C
+// ABAC：CmM7(低) → Fm7 → CmM7(高) → Dm7b5
+const JAZ_CM7_LOW    = buildScale([261.63, 311.13, 392.00, 493.88, 523.25, 622.25, 783.99]); // C4 Eb4 G4 B4 C5 Eb5 G5
+const JAZ_FM7        = buildScale([174.61, 207.65, 261.63, 311.13, 349.23, 415.30, 523.25]); // F3 Ab3 C4 Eb4 F4 Ab4 C5
+const JAZ_CM7_HIGH   = buildScale([311.13, 392.00, 493.88, 523.25, 622.25, 783.99, 987.77]); // Eb4 G4 B4 C5 Eb5 G5 B5
+const JAZ_DM7B5      = buildScale([146.83, 174.61, 207.65, 261.63, 293.66, 349.23, 415.30]); // D3 F3 Ab3 C4 D4 F4 Ab4
+
+// ── 星空夜語 — D Dorian ──────────────────────────────
+// Dm7: D F A C → Gmaj7: G B D F# → Em7: E G B D
+// ABAC：Dm7(低) → Gmaj7 → Dm7(中) → Em7
+const STR_DM7_LOW    = buildScale([146.83, 174.61, 220.00, 261.63, 293.66, 349.23, 440.00]); // D3 F3 A3 C4 D4 F4 A4
+const STR_GMAJ7      = buildScale([196.00, 246.94, 293.66, 369.99, 392.00, 493.88, 587.33]); // G3 B3 D4 F#4 G4 B4 D5
+const STR_DM7_MID    = buildScale([293.66, 349.23, 440.00, 523.25, 587.33, 698.46, 880.00]); // D4 F4 A4 C5 D5 F5 A5
+const STR_EM7        = buildScale([164.81, 196.00, 246.94, 293.66, 329.63, 392.00, 493.88]); // E3 G3 B3 D4 E4 G4 B4
+
 const TEMPLATES = {
   zen: {
     id: 'zen',
@@ -522,36 +547,52 @@ const TEMPLATES = {
     voiceHint: 'glass',
   },
 
-  jazz: {
-    id: 'jazz',
-    label: 'Jazz Ambient',
-    desc: '慵懶・暗色調・深夜',
-    scale: buildScale(C4, [0, 2, 3, 5, 7, 9, 11]),  // Jazz Melodic Minor
-    sections: [
-      { density: 0.2,  duration: 60, label: '暮・色' },
-      { density: 0.4,  duration: 45, label: '微・醺' },
-      { density: 0.6,  duration: 30, label: '即・興' },
-      { density: 0.3,  duration: 45, label: '餘・韻' },
-    ],
-    bpm: 80,
-    reverbDecay: 3.0,
-    voiceHint: 'glass',
-  },
-
   garden: {
     id: 'garden',
     label: '鄉村花園',
     desc: '輕快・愉悅・活潑',
-    scale: buildScale(G4, [0, 2, 4, 5, 7, 9, 11]),  // G 大調自然音階
+    scale: buildScale(G4, [0, 2, 4, 5, 7, 9, 11]),
     sections: [
-      { density: 0.4,  duration: 40, label: '晨・露' },
-      { density: 0.7,  duration: 40, label: '花・開' },
-      { density: 0.9,  duration: 30, label: '蝶・舞' },
-      { density: 0.4,  duration: 50, label: '暮・歸' },
+      { density: 0.35, duration: 40, label: '晨・露', scale: GDN_GMAJ7_LOW  },
+      { density: 0.60, duration: 45, label: '花・開', scale: GDN_AM7        },
+      { density: 0.85, duration: 30, label: '蝶・舞', scale: GDN_GMAJ7_HIGH },
+      { density: 0.40, duration: 50, label: '暮・歸', scale: GDN_D7         },
     ],
-    bpm: 110,
-    reverbDecay: 1.5,
+    bpm: 90,
+    reverbDecay: 1.8,
     voiceHint: 'metal',
+  },
+
+  jazz: {
+    id: 'jazz',
+    label: 'Jazz Ambient',
+    desc: '慵懶・暗色調・深夜',
+    scale: buildScale(C4, [0, 2, 3, 5, 7, 9, 11]),
+    sections: [
+      { density: 0.25, duration: 50, label: '暮・色', scale: JAZ_CM7_LOW  },
+      { density: 0.50, duration: 45, label: '微・醺', scale: JAZ_FM7      },
+      { density: 0.70, duration: 30, label: '即・興', scale: JAZ_CM7_HIGH },
+      { density: 0.30, duration: 55, label: '餘・韻', scale: JAZ_DM7B5    },
+    ],
+    bpm: 70,
+    reverbDecay: 3.5,
+    voiceHint: 'ceramic',
+  },
+
+  star: {
+    id: 'star',
+    label: '星空夜語',
+    desc: '悠長・飄渺・入睡',
+    scale: buildScale(D4, [0, 2, 3, 5, 7, 9, 10]),
+    sections: [
+      { density: 0.20, duration: 50, label: '星・光', scale: STR_DM7_LOW  },
+      { density: 0.40, duration: 45, label: '銀・河', scale: STR_GMAJ7    },
+      { density: 0.30, duration: 35, label: '流・星', scale: STR_DM7_MID  },
+      { density: 0.15, duration: 60, label: '夜・語', scale: STR_EM7      },
+    ],
+    bpm: 50,
+    reverbDecay: 6.0,
+    voiceHint: 'glass',
   },
 };
 
@@ -641,9 +682,9 @@ const VOICE_PRESETS = {
     },
   },
 
-  // ── 撥弦風鈴 ───────────────────────────────────────────
+  // ── 敲弦風鈴 ───────────────────────────────────────────
   pluck: {
-    label: '撥弦風鈴',
+    label: '敲弦風鈴',
     // 用 FMSynth 模擬撥弦聲（Tone.PluckSynth 在 v14.7.77 無輸出）
     // FM 合成：載波(正弦) + 調制(方波)
     synthClass: 'FMSynth',
@@ -686,9 +727,16 @@ const reverbSlider = document.getElementById('reverb');
 const reverbVal    = document.getElementById('reverbVal');
 const voiceSelect  = document.getElementById('voiceSelect');
 const templateSelect = document.getElementById('templateSelect');
+const templateName   = document.getElementById('templateName');
+const templateDesc   = document.getElementById('templateDesc');
 
 // 確保 select 初始值與 currentVoice 一致
 voiceSelect.value = currentVoice;
+
+// 初始標題同步
+const initTpl = getTemplate();
+templateName.textContent = initTpl.label;
+templateDesc.textContent = initTpl.desc;
 
 /* ============================================================
    4.1  WindController — 自然風模擬
@@ -1080,6 +1128,10 @@ templateSelect.addEventListener('change', () => {
   currentTemplateId = newId;
 
   const tpl = getTemplate();
+
+  // 更新標題顯示
+  templateName.textContent = tpl.label;
+  templateDesc.textContent = tpl.desc;
 
   // 切換 bpm 滑桿顯示值
   tempoSlider.value = tpl.bpm;
