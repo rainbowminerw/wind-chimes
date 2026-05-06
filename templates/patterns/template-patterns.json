@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WindChime Rhythm Patterns Collection",
+  "version": "2.0.0",
+  "description": "5 preset rhythm patterns for wind chime templates (段落式架構 v2)",
+  "updateNote": "2026-04-09: 加入段落（Section）架構，讓隨機更有機、更有結構感",
+  "patterns": [
+    {
+      "id": "zen_meditation_v2",
+      "name": "禪風冥想",
+      "name_en": "Zen Meditation",
+      "timeSignature": "4/4",
+      "bpm": 60,
+      "swing": 0.05,
+      "character": "極慢、稀疏、留白多、有機呼吸感",
+      "sections": {
+        "A": {
+          "description": "平靜引導",
+          "intervals": [2, 3, 2, 3, 2],
+          "probabilityToPlay": 0.3,
+          "maxConsecutiveNotes": 2,
+          "typicalLength": { "minNotes": 16, "maxNotes": 32 },
+          "dynamics": { "min": 35, "max": 50 }
+        },
+        "B": {
+          "description": "稍微豐富",
+          "intervals": [2, 2, 3, 2, 3, 2],
+          "probabilityToPlay": 0.5,
+          "maxConsecutiveNotes": 4,
+          "typicalLength": { "minNotes": 8, "maxNotes": 16 },
+          "dynamics": { "min": 40, "max": 60 }
+        },
+        "C": {
+          "description": "短暫高潮",
+          "intervals": [1, 2, 1, 2, 1, 2, 1],
+          "probabilityToPlay": 0.7,
+          "maxConsecutiveNotes": 6,
+          "typicalLength": { "minNotes": 4, "maxNotes": 8 },
+          "dynamics": { "min": 50, "max": 70 }
+        }
+      },
+      "sectionTransitions": {
+        "A→A": 0.6, "A→B": 0.3, "A→C": 0.1,
+        "B→A": 0.3, "B→B": 0.4, "B→C": 0.3,
+        "C→A": 0.7, "C→B": 0.2, "C→C": 0.1
+      },
+      "dynamics": {
+        "range": { "min": 35, "max": 70 },
+        "crescendo_probability": 0.2,
+        "decrescendo_probability": 0.2,
+        "accent_first_beat": true
+      },
+      "articulation": "legato",
+      "usage": ["japanese", "zen", "meditation", "tea_ceremony"]
+    },
+    {
+      "id": "jazz_ambient_v2",
+      "name": "爵士氛圍",
+      "name_en": "Jazz Ambient",
+      "timeSignature": "4/4",
+      "bpm": 80,
+      "swing": 0.15,
+      "character": "中速、搖擺、隨性、暗色調張力",
+      "sections": {
+        "A": {
+          "description": "慵懶起始",
+          "intervals": [2, 1, 2, 2, 2, 1, 2],
+          "probabilityToPlay": 0.35,
+          "maxConsecutiveNotes": 3,
+          "typicalLength": { "minNotes": 12, "maxNotes": 24 },
+          "dynamics": { "min": 40, "max": 60 }
+        },
+        "B": {
+          "description": "即興展開",
+          "intervals": [1, 2, 1, 3, 1, 2, 1, 2],
+          "probabilityToPlay": 0.5,
+          "maxConsecutiveNotes": 5,
+          "typicalLength": { "minNotes": 8, "maxNotes": 16 },
+          "dynamics": { "min": 45, "max": 75 }
+        },
+        "C": {
+          "description": "藍調終止",
+          "intervals": [3, 2, 1, 1, 2, 3],
+          "probabilityToPlay": 0.6,
+          "maxConsecutiveNotes": 4,
+          "typicalLength": { "minNotes": 4, "maxNotes": 12 },
+          "dynamics": { "min": 50, "max": 80 }
+        }
+      },
+      "sectionTransitions": {
+        "A→A": 0.4, "A→B": 0.4, "A→C": 0.2,
+        "B→A": 0.3, "B→B": 0.4, "B→C": 0.3,
+        "C→A": 0.5, "C→B": 0.3, "C→C": 0.2
+      },
+      "dynamics": {
+        "range": { "min": 40, "max": 80 },
+        "crescendo_probability": 0.3,
+        "decrescendo_probability": 0.25,
+        "accent_first_beat": true,
+        "rubato": { "enabled": true, "range": 0.08 }
+      },
+      "articulation": "rubato",
+      "usage": ["jazz", "lounge", "night", "sophisticated"]
+    },
+    {
+      "id": "garden_breeze_v2",
+      "name": "花園微風",
+      "name_en": "Garden Breeze",
+      "timeSignature": "4/4",
+      "bpm": 110,
+      "swing": 0.2,
+      "character": "活潑、輕快、節奏明確、花園生機",
+      "sections": {
+        "A": {
+          "description": "輕快開場",
+          "intervals": [2, 2, 1, 2, 2, 1, 2],
+          "probabilityToPlay": 0.5,
+          "maxConsecutiveNotes": 4,
+          "typicalLength": { "minNotes": 8, "maxNotes": 16 },
+          "dynamics": { "min": 55, "max": 80 }
+        },
+        "B": {
+          "description": "熱鬧高潮",
+          "intervals": [1, 1, 2, 1, 2, 1, 1],
+          "probabilityToPlay": 0.7,
+          "maxConsecutiveNotes": 6,
+          "typicalLength": { "minNotes": 4, "maxNotes": 12 },
+          "dynamics": { "min": 65, "max": 95 }
+        },
+        "C": {
+          "description": "平靜回落",
+          "intervals": [2, 3, 2, 3, 2],
+          "probabilityToPlay": 0.4,
+          "maxConsecutiveNotes": 3,
+          "typicalLength": { "minNotes": 8, "maxNotes": 20 },
+          "dynamics": { "min": 45, "max": 70 }
+        }
+      },
+      "sectionTransitions": {
+        "A→A": 0.5, "A→B": 0.3, "A→C": 0.2,
+        "B→A": 0.2, "B→B": 0.4, "B→C": 0.4,
+        "C→A": 0.5, "C→B": 0.3, "C→C": 0.2
+      },
+      "dynamics": {
+        "range": { "min": 45, "max": 95 },
+        "crescendo_probability": 0.15,
+        "decrescendo_probability": 0.15,
+        "accent_first_beat": true,
+        "accent_third_beat": true
+      },
+      "articulation": "staccato",
+      "usage": ["garden", "outdoor", "cheerful", "metal_chime"]
+    },
+    {
+      "id": "night_stars_v2",
+      "name": "星空夜語",
+      "name_en": "Night Stars",
+      "timeSignature": "6/8",
+      "bpm": 54,
+      "swing": 0.0,
+      "character": "悠長、三拍子、漂泊感、神秘氛圍",
+      "sections": {
+        "A": {
+          "description": "星空引導",
+          "intervals": [2, 2, 2, 2, 2, 2],
+          "probabilityToPlay": 0.25,
+          "maxConsecutiveNotes": 2,
+          "typicalLength": { "minNotes": 12, "maxNotes": 24 },
+          "dynamics": { "min": 30, "max": 50 }
+        },
+        "B": {
+          "description": "光芒閃爍",
+          "intervals": [1, 3, 1, 3, 1, 3],
+          "probabilityToPlay": 0.4,
+          "maxConsecutiveNotes": 3,
+          "typicalLength": { "minNotes": 6, "maxNotes": 12 },
+          "dynamics": { "min": 35, "max": 65 }
+        },
+        "C": {
+          "description": "銀河浪潮",
+          "intervals": [2, 1, 2, 1, 2, 1],
+          "probabilityToPlay": 0.5,
+          "maxConsecutiveNotes": 4,
+          "typicalLength": { "minNotes": 4, "maxNotes": 10 },
+          "dynamics": { "min": 40, "max": 70 }
+        }
+      },
+      "sectionTransitions": {
+        "A→A": 0.6, "A→B": 0.3, "A→C": 0.1,
+        "B→A": 0.3, "B→B": 0.4, "B→C": 0.3,
+        "C→A": 0.5, "C→B": 0.3, "C→C": 0.2
+      },
+      "dynamics": {
+        "range": { "min": 30, "max": 70 },
+        "crescendo_probability": 0.35,
+        "decrescendo_probability": 0.4,
+        "accent_first_beat": false
+      },
+      "articulation": "legato",
+      "usage": ["newage", "space", "dream", "ethereal"]
+    },
+    {
+      "id": "classical_chamber_v2",
+      "name": "古典室內樂",
+      "name_en": "Classical Chamber",
+      "timeSignature": "4/4",
+      "bpm": 72,
+      "swing": 0.1,
+      "character": "均衡、優雅、室內樂殘響、古典儀式感",
+      "sections": {
+        "A": {
+          "description": "主題陳述",
+          "intervals": [2, 2, 1, 2, 2, 2, 1],
+          "probabilityToPlay": 0.5,
+          "maxConsecutiveNotes": 4,
+          "typicalLength": { "minNotes": 8, "maxNotes": 16 },
+          "dynamics": { "min": 50, "max": 75 }
+        },
+        "B": {
+          "description": "發展變奏",
+          "intervals": [1, 2, 1, 2, 1, 2, 1, 2],
+          "probabilityToPlay": 0.6,
+          "maxConsecutiveNotes": 5,
+          "typicalLength": { "minNotes": 6, "maxNotes": 14 },
+          "dynamics": { "min": 45, "max": 85 }
+        },
+        "C": {
+          "description": "華麗終止",
+          "intervals": [2, 2, 2, 1, 2, 2],
+          "probabilityToPlay": 0.65,
+          "maxConsecutiveNotes": 5,
+          "typicalLength": { "minNotes": 4, "maxNotes": 10 },
+          "dynamics": { "min": 55, "max": 90 }
+        }
+      },
+      "sectionTransitions": {
+        "A→A": 0.5, "A→B": 0.3, "A→C": 0.2,
+        "B→A": 0.2, "B→B": 0.4, "B→C": 0.4,
+        "C→A": 0.6, "C→B": 0.25, "C→C": 0.15
+      },
+      "dynamics": {
+        "range": { "min": 45, "max": 90 },
+        "crescendo_probability": 0.25,
+        "decrescendo_probability": 0.25,
+        "accent_first_beat": true,
+        "accent_third_beat": true
+      },
+      "articulation": "tenuto",
+      "usage": ["classical", "chamber", "refined", "concert_hall"]
+    }
+  ]
+}

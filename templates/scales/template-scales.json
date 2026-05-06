@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WindChime Scales Collection",
+  "version": "1.0.0",
+  "description": "10 preset musical scales for wind chime templates",
+  "scales": [
+    {
+      "id": "major",
+      "name": "大調自然音階",
+      "name_en": "Major Scale",
+      "mode": "major",
+      "intervals": [0, 2, 4, 5, 7, 9, 11],
+      "semitones": 12,
+      "character": "明亮、穩定、常見",
+      "chordTriads": [
+        [0, 4, 7],
+        [2, 5, 9],
+        [4, 7, 11],
+        [5, 9, 0],
+        [7, 11, 2],
+        [9, 0, 4],
+        [11, 2, 5]
+      ],
+      "usage": ["classic", "pop", "folk", "default"]
+    },
+    {
+      "id": "pentatonic_major",
+      "name": "五聲音階（大調）",
+      "name_en": "Major Pentatonic",
+      "mode": "pentatonic",
+      "intervals": [0, 2, 4, 7, 9],
+      "semitones": 12,
+      "character": "甜美、亞洲風、和諧",
+      "chordTriads": [
+        [0, 4, 7],
+        [2, 7, 9],
+        [4, 9, 0],
+        [7, 0, 2],
+        [9, 2, 4]
+      ],
+      "usage": ["japanese", "chinese", "zen", "folk"]
+    },
+    {
+      "id": "pentatonic_minor",
+      "name": "五聲音階（小調）",
+      "name_en": "Minor Pentatonic",
+      "mode": "pentatonic_minor",
+      "intervals": [0, 3, 5, 7, 10],
+      "semitones": 12,
+      "character": "藍調、情感、深沉",
+      "chordTriads": [
+        [0, 3, 7],
+        [3, 7, 10],
+        [5, 10, 0],
+        [7, 10, 3],
+        [10, 0, 5]
+      ],
+      "usage": ["blues", "jazz", "soul", "ambient"]
+    },
+    {
+      "id": "jazz_minor",
+      "name": "爵士旋律小調",
+      "name_en": "Jazz Melodic Minor",
+      "mode": "jazz_minor",
+      "intervals": [0, 2, 3, 5, 7, 9, 11],
+      "semitones": 12,
+      "character": "成熟、內斂、爵士味",
+      "chordTriads": [
+        [0, 3, 7],
+        [2, 5, 9],
+        [3, 7, 11],
+        [5, 9, 0],
+        [7, 11, 2],
+        [9, 0, 3],
+        [11, 2, 5]
+      ],
+      "usage": ["jazz", "ambient", "sophisticated", "noir"]
+    },
+    {
+      "id": "whole_tone",
+      "name": "全音音階",
+      "name_en": "Whole Tone Scale",
+      "mode": "whole_tone",
+      "intervals": [0, 2, 4, 6, 8, 10],
+      "semitones": 12,
+      "character": "夢幻、漂浮、無限",
+      "chordTriads": [
+        [0, 4, 8],
+        [2, 6, 10],
+        [4, 8, 0],
+        [6, 10, 2],
+        [8, 0, 4],
+        [10, 2, 6]
+      ],
+      "usage": ["newage", "ethereal", "space", "dream"]
+    },
+    {
+      "id": "blues",
+      "name": "布魯斯音階",
+      "name_en": "Blues Scale",
+      "mode": "blues",
+      "intervals": [0, 3, 5, 6, 7, 10],
+      "semitones": 12,
+      "character": "藍調、性感、搖曳",
+      "chordTriads": [
+        [0, 3, 7],
+        [3, 6, 10],
+        [5, 9, 0],
+        [6, 10, 3],
+        [7, 10, 2],
+        [10, 2, 5]
+      ],
+      "usage": ["blues", "jazz", "groove", "smoky"]
+    },
+    {
+      "id": "bhairav",
+      "name": "印度 Bhairav",
+      "name_en": "Bhairav Thata",
+      "mode": "bhairav",
+      "intervals": [0, 1, 4, 5, 7, 8, 11],
+      "semitones": 12,
+      "character": "神秘、古老、印度風",
+      "chordTriads": [
+        [0, 4, 8],
+        [1, 5, 9],
+        [4, 8, 0],
+        [5, 9, 1],
+        [7, 11, 3],
+        [8, 0, 4],
+        [11, 3, 7]
+      ],
+      "usage": ["indian", "meditation", "mystical", "spiritual"]
+    },
+    {
+      "id": "dorian",
+      "name": " Dorian 調式",
+      "name_en": "Dorian Mode",
+      "mode": "dorian",
+      "intervals": [0, 2, 3, 5, 7, 9, 10],
+      "semitones": 12,
+      "character": "爵士小調、舒適、楓木香",
+      "chordTriads": [
+        [0, 3, 7],
+        [2, 5, 9],
+        [3, 7, 10],
+        [5, 9, 0],
+        [7, 10, 2],
+        [9, 0, 3],
+        [10, 2, 5]
+      ],
+      "usage": ["jazz", "fusion", "celtic", "folk"]
+    },
+    {
+      "id": "mixolydian",
+      "name": "Mixolydian 調式",
+      "name_en": "Mixolydian Mode",
+      "mode": "mixolydian",
+      "intervals": [0, 2, 4, 5, 7, 9, 10],
+      "semitones": 12,
+      "character": "明亮、民謠、搖滾",
+      "chordTriads": [
+        [0, 4, 7],
+        [2, 5, 9],
+        [4, 7, 10],
+        [5, 9, 0],
+        [7, 10, 2],
+        [9, 0, 4],
+        [10, 2, 5]
+      ],
+      "usage": ["folk", "rock", "country", "happy"]
+    },
+    {
+      "id": "phrygian",
+      "name": "Phrygian 調式",
+      "name_en": "Phrygian Mode",
+      "mode": "phrygian",
+      "intervals": [0, 1, 3, 5, 7, 8, 10],
+      "semitones": 12,
+      "character": "西班牙風、黑暗、異國",
+      "chordTriads": [
+        [0, 3, 7],
+        [1, 5, 8],
+        [3, 7, 10],
+        [5, 8, 0],
+        [7, 10, 1],
+        [8, 0, 3],
+        [10, 1, 5]
+      ],
+      "usage": ["spanish", "flamenco", "dark", "exotic"]
+    }
+  ]
+}
