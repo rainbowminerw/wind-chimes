@@ -1,6 +1,6 @@
 # 🎐 風鈴 — Wind Chime Simulator
 
-Ear training pitch recognition app. A beautiful wind chime simulator for your desktop.
+A beautiful wind chime simulator for your desktop.
 
 一款優美的桌面風鈴模擬器，基於 Web Audio API 打造，完全離線使用。模擬風鈴隨機敲擊的聲音，配合玻璃質感 UI 與動態光球視覺效果，創造永不重複的聽覺體驗。
 
