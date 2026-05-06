@@ -610,9 +610,8 @@ voiceSelect.value = currentVoice;
    用 Perlin Noise 產生平滑變化的風速曲線，影響排程間隔與力度。
 
    原理：
-   - slow × 0.35 + fast × 0.65 兩層疊加後 clamp 到 0~1
-   - slowLayer（~0.05Hz）：主要週期約 20 秒，決定大方向
-   - fastLayer（~0.15Hz）：主導 65%，製造明顯陣風感
+   - slow × 0.35（週期 8s）+ fast × 0.65（週期 3s）兩層疊加
+   - S 曲線對比度拉伸：讓中間分佈稀疏、兩端更多
    - 無風時間隔拉長至 2x，最大風時間隔縮至 0.1x（極密集）
 
    Perlin Noise 實作：
@@ -664,13 +663,18 @@ function perlin1D(x) {
 // 回傳值範圍：0 ~ 1
 // 參數 timeSeconds：以秒為單位的時間（可用 Date.now()/1000 或 Tone.now()）
 function getWindStrength(timeSeconds) {
-  // 第一層（慢速波動，~0.05Hz，週期約 20 秒）× 0.35
-  const slow = perlin1D(timeSeconds * 0.05) * 0.35;
-  // 第二層（較快陣風細節，~0.15Hz）× 0.65 主導
-  const fast = perlin1D(timeSeconds * 0.15 + 100) * 0.65; // +100 錯開相位
+  // 第一層（慢速波動，週期約 8 秒）× 0.35
+  const slow = perlin1D(timeSeconds / 8) * 0.35;
+  // 第二層（較快陣風細節，週期約 3 秒）× 0.65 主導
+  const fast = perlin1D(timeSeconds / 3 + 100) * 0.65; // +100 錯開相位
   // 疊加後將 perlin 的 [-1, 1] 映射到 [0, 1] 並 clamp
   const raw = slow + fast;
-  return Math.max(0, Math.min(1, raw * 0.5 + 0.5));
+  const linear = Math.max(0, Math.min(1, raw * 0.5 + 0.5));
+  // S 曲線：增加對比度，讓中間值變稀疏、兩端分佈更多
+  // 仿照修圖軟體的對比度曲線 (sigmoid / S-curve)
+  const s = linear * 2 - 1;              // [0,1] → [-1,1]
+  const boosted = s + (s - s*s*s) * 0.4; // S 形拉伸，0.4 可調強度
+  return Math.max(0, Math.min(1, (boosted + 1) / 2));
 }
 
 // 基速因子：tempoSlider 的值（20~120）映射到速率倍率
