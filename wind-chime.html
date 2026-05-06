@@ -371,6 +371,18 @@ select:focus {
     </div>
   </div>
 
+  <!-- 模板選擇 -->
+  <div class="selector-row horizontal" style="margin-top:4px;">
+    <div class="selector-item" style="flex:1; min-width:0;">
+      <span class="selector-label">風格</span>
+      <select id="templateSelect" style="flex:1; min-width:0;">
+        <option value="zen">🧘 禪風冥想</option>
+        <option value="jazz">🎷 Jazz Ambient</option>
+        <option value="garden">🌻 鄉村花園</option>
+      </select>
+    </div>
+  </div>
+
   <!-- 音色選擇 -->
   <div class="selector-row horizontal">
     <div class="selector-item" style="flex:1; min-width:0;">
@@ -453,42 +465,85 @@ PERFORMANCE OF THIS SOFTWARE.
 'use strict';
 
 /* ============================================================
-   1. 預設模板：禪風五聲音階
+   1. 預設模板（三種風格可切換）
    ============================================================
 
-   scale：頻率矩陣（Hz），對應鋼琴鍵盤 C4 到 E6。
-           五聲音階（宮・商・角・徵・羽）= C D E G A
-           音符隨機從中挑選，沒有半音，天然和諧。
-
-   sections：四個段落，每段有：
-     - density：敲擊密度（0~1）。density × 1.8 = 平均每秒敲擊次數
-     - duration：持續時間（秒）
-     - label：顯示在卡片上的名稱
+   每個模板定義：
+   - scale：頻率矩陣（Hz），對應鋼琴鍵盤
+   - sections：四個段落，density 控制敲擊密度，duration 控制持續時間
+   - bpm：基底速度
+   - reverbDecay：殘響衰減時間
+   - voiceHint：建議音色（切換時自動帶入）
+   - label / desc：顯示用
 
    ============================================================ */
-const TEMPLATE = {
-  name: '禪風五聲音階',
-  desc: '放鬆・冥想・專注',
 
-  // 五聲音階：宮・商・角・徵・羽（C D E G A）
-  // 頻率矩陣（Hz），覆蓋三個八度
-  scale: [
-    261.63, 293.66, 329.63, 392.00, 440.00,  // C4 D4 E4 G4 A4
-    523.25, 587.33, 659.25, 784.00, 880.00,  // C5 D5 E5 G5 A5
-    1046.50, 1174.66, 1318.51,                // C6 D6 E6
-  ],
+// 音階產生輔助函數：給一組半音間隔（0=C），從 rootHz 開始往上疊音
+function buildScale(rootFreq, intervals, octaves = 2) {
+  const scale = [];
+  for (let o = 0; o <= octaves; o++) {
+    for (const i of intervals) {
+      scale.push(rootFreq * Math.pow(2, (o * 12 + i) / 12));
+    }
+  }
+  return scale;
+}
 
-  // 段落定義：寂靜 → 風起 → 潮湧 → 餘韻
-  sections: [
-    { density: 0.3,  duration: 45, label: '寂・靜' },
-    { density: 0.6,  duration: 45, label: '風・起' },
-    { density: 0.9,  duration: 45, label: '潮・湧' },
-    { density: 0.5,  duration: 45, label: '餘・韻' },
-  ],
+const C4 = 261.63, D4 = 293.66, G4 = 392.00;
 
-  // 參考 BPM（目前實作中密度是主要節奏參數，BPM 影響不大）
-  bpm: 60,
+const TEMPLATES = {
+  zen: {
+    id: 'zen',
+    label: '禪風冥想',
+    desc: '放鬆・冥想・專注',
+    scale: buildScale(C4, [0, 2, 4, 7, 9]),  // 五聲音階 C D E G A
+    sections: [
+      { density: 0.3,  duration: 45, label: '寂・靜' },
+      { density: 0.6,  duration: 45, label: '風・起' },
+      { density: 0.9,  duration: 45, label: '潮・湧' },
+      { density: 0.5,  duration: 45, label: '餘・韻' },
+    ],
+    bpm: 60,
+    reverbDecay: 4.5,
+    voiceHint: 'glass',
+  },
+
+  jazz: {
+    id: 'jazz',
+    label: 'Jazz Ambient',
+    desc: '慵懶・暗色調・深夜',
+    scale: buildScale(C4, [0, 2, 3, 5, 7, 9, 11]),  // Jazz Melodic Minor
+    sections: [
+      { density: 0.2,  duration: 60, label: '暮・色' },
+      { density: 0.4,  duration: 45, label: '微・醺' },
+      { density: 0.6,  duration: 30, label: '即・興' },
+      { density: 0.3,  duration: 45, label: '餘・韻' },
+    ],
+    bpm: 80,
+    reverbDecay: 3.0,
+    voiceHint: 'glass',
+  },
+
+  garden: {
+    id: 'garden',
+    label: '鄉村花園',
+    desc: '輕快・愉悅・活潑',
+    scale: buildScale(G4, [0, 2, 4, 5, 7, 9, 11]),  // G 大調自然音階
+    sections: [
+      { density: 0.4,  duration: 40, label: '晨・露' },
+      { density: 0.7,  duration: 40, label: '花・開' },
+      { density: 0.9,  duration: 30, label: '蝶・舞' },
+      { density: 0.4,  duration: 50, label: '暮・歸' },
+    ],
+    bpm: 110,
+    reverbDecay: 1.5,
+    voiceHint: 'metal',
+  },
 };
+
+// 當前使用中的模板（預設禪風）
+let currentTemplateId = 'zen';
+function getTemplate() { return TEMPLATES[currentTemplateId]; }
 
 /* ============================================================
    2. 音色預設
@@ -599,6 +654,7 @@ const tempoVal     = document.getElementById('tempoVal');
 const reverbSlider = document.getElementById('reverb');
 const reverbVal    = document.getElementById('reverbVal');
 const voiceSelect  = document.getElementById('voiceSelect');
+const templateSelect = document.getElementById('templateSelect');
 
 // 確保 select 初始值與 currentVoice 一致
 voiceSelect.value = currentVoice;
@@ -718,9 +774,9 @@ async function initAudio() {
     parseInt(volumeSlider.value, 10) / 100
   ).toDestination();
 
-  // 殘響效果器
+  // 殘響效果器（decay 從當前模板讀取）
   reverb = new Tone.Reverb({
-    decay: 4.5,                         // 殘響衰減時間（秒）
+    decay: getTemplate().reverbDecay,                         // 殘響衰減時間（秒）
     wet: parseInt(reverbSlider.value, 10) / 100,  // 乾濕比例
   }).connect(masterGain);
   await reverb.generate();  // 生成脈衝響應（需等待）
@@ -807,7 +863,7 @@ function playNote(freq, velocity = 0.6) {
 function scheduleSection(sectionIndex) {
   if (!state.playing) return;
 
-  const section = TEMPLATE.sections[sectionIndex];
+  const section = getTemplate().sections[sectionIndex];
   state.currentSection = sectionIndex;
   sectionBadge.textContent = section.label;
   sectionBadge.classList.add('visible');
@@ -823,8 +879,8 @@ function scheduleSection(sectionIndex) {
     if (!state.playing || Date.now() >= endTime) return;
 
     // 從音階中隨機挑一個頻率
-    const freq = TEMPLATE.scale[
-      Math.floor(Math.random() * TEMPLATE.scale.length)
+    const freq = getTemplate().scale[
+      Math.floor(Math.random() * getTemplate().scale.length)
     ];
 
     // ── 當前風速 ──────────────────────────────────────
@@ -879,8 +935,8 @@ function runSections() {
   function nextSection() {
     if (!state.playing) return;
     scheduleSection(idx);
-    idx = (idx + 1) % TEMPLATE.sections.length;
-    const prevSection = TEMPLATE.sections[(idx - 1 + TEMPLATE.sections.length) % TEMPLATE.sections.length];
+    idx = (idx + 1) % getTemplate().sections.length;
+    const prevSection = getTemplate().sections[(idx - 1 + getTemplate().sections.length) % getTemplate().sections.length];
     sectionTimeout = setTimeout(nextSection, prevSection.duration * 1000);
   }
   nextSection();
@@ -957,11 +1013,10 @@ volumeSlider.addEventListener('input', () => {
   }
 });
 
-// 速度：更新顯示（TEMPLATE.bpm 目前主要作為參考值）
+// 速度：更新顯示（bpm 影響 getBaseSpeedFactor()）
 tempoSlider.addEventListener('input', () => {
   const bpm = parseInt(tempoSlider.value, 10);
-  tempoVal.textContent = bpm;       // 顯示純數字，節省空間
-  TEMPLATE.bpm = bpm;
+  tempoVal.textContent = bpm;
 });
 
 // 殘響：即時映射到 Reverb wet（0-100 → 0-1）
@@ -982,6 +1037,41 @@ voiceSelect.addEventListener('change', () => {
   if (state.audioReady) {
     buildSynth(currentVoice);
   }
+});
+
+// 模板切換：更新模板後根據 voiceHint 切換音色 + 重啟播放
+templateSelect.addEventListener('change', () => {
+  const newId = templateSelect.value;
+  if (newId === currentTemplateId) return;
+  currentTemplateId = newId;
+
+  const tpl = getTemplate();
+
+  // 切換 bpm 滑桿顯示值
+  tempoSlider.value = tpl.bpm;
+  tempoVal.textContent = tpl.bpm;
+
+  // 切換殘響 decay + wet 不變
+  if (reverb) {
+    reverb.decay = tpl.reverbDecay;
+  }
+
+  // 切換音色為模板建議音色
+  if (tpl.voiceHint && tpl.voiceHint !== currentVoice) {
+    currentVoice = tpl.voiceHint;
+    voiceSelect.value = currentVoice;
+    if (state.audioReady) {
+      buildSynth(currentVoice);
+    }
+  }
+
+  // 如果正在播放，重啟以套用新模板的 scale/sections
+  if (state.playing) {
+    stopAll();
+    runSections();
+  }
+
+  console.log('[wind-chime] 切換模板 →', tpl.label);
 });
 
 /* ============================================================
