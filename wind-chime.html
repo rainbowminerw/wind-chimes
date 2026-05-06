@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎐 風鈴 v0.06</title>
+<title>🎐 風鈴 v0.07</title>
 <style>
 /* ============================================================
    wind-chime.html — 風鈴模擬器
@@ -479,8 +479,11 @@ PERFORMANCE OF THIS SOFTWARE.
 
    ============================================================ */
 
-// 音階產生輔助函數：給一組半音間隔（0=C），從 rootHz 開始往上疊音
+// 音階產生輔助函數：
+//   1. buildScale([freq1, freq2, ...]) — 直接回傳頻率陣列（段落級音階）
+//   2. buildScale(rootFreq, intervals, octaves=2) — 從半音間隔疊八度（模板級）
 function buildScale(rootFreq, intervals, octaves = 2) {
+  if (Array.isArray(rootFreq)) return rootFreq;
   const scale = [];
   for (let o = 0; o <= octaves; o++) {
     for (const i of intervals) {
@@ -492,17 +495,26 @@ function buildScale(rootFreq, intervals, octaves = 2) {
 
 const C4 = 261.63, D4 = 293.66, G4 = 392.00;
 
+// ── 禪風和弦音階（7 音 × 3 組，跨 C3~A4 三個八度）──
+// Cmaj9:  C E G B D F A  → 明亮平和，寂靜與潮湧用
+// Dm9:    D F A C E G B  → 微微憂鬱，風起用
+// Am11:   A C E G B D F  → 深邃沉降，餘韻用
+const ZEN_CMAJ9 = buildScale([130.81, 164.81, 196.00, 246.94, 293.66, 349.23, 440.00]);
+const ZEN_DM9   = buildScale([146.83, 174.61, 220.00, 261.63, 329.63, 392.00, 493.88]);
+const ZEN_AM11  = buildScale([110.00, 130.81, 164.81, 196.00, 246.94, 293.66, 349.23]);
+
 const TEMPLATES = {
   zen: {
     id: 'zen',
     label: '禪風冥想',
     desc: '放鬆・冥想・專注',
-    scale: buildScale(C4, [0, 2, 4, 7, 9]),  // 五聲音階 C D E G A
+    // 段落級音階：每個段落可指定自己的 scale，未指定則 fallback 到此
+    scale: buildScale(C4, [0, 2, 4, 7, 9]),
     sections: [
-      { density: 0.3,  duration: 45, label: '寂・靜' },
-      { density: 0.6,  duration: 45, label: '風・起' },
-      { density: 0.9,  duration: 45, label: '潮・湧' },
-      { density: 0.5,  duration: 45, label: '餘・韻' },
+      { density: 0.30, duration: 40, label: '寂・靜', scale: ZEN_CMAJ9 },
+      { density: 0.55, duration: 50, label: '風・起', scale: ZEN_DM9   },
+      { density: 0.80, duration: 35, label: '潮・湧', scale: ZEN_CMAJ9 },
+      { density: 0.35, duration: 55, label: '餘・韻', scale: ZEN_AM11  },
     ],
     bpm: 60,
     reverbDecay: 4.5,
@@ -898,7 +910,9 @@ function playNote(freq, velocity = 0.6) {
 function scheduleSection(sectionIndex) {
   if (!state.playing) return;
 
-  const section = getTemplate().sections[sectionIndex];
+  const tpl = getTemplate();
+  const section = tpl.sections[sectionIndex];
+  const activeScale = section.scale || tpl.scale;
   state.currentSection = sectionIndex;
   sectionBadge.textContent = section.label;
   sectionBadge.classList.add('visible');
@@ -914,8 +928,8 @@ function scheduleSection(sectionIndex) {
     if (!state.playing || Date.now() >= endTime) return;
 
     // 從音階中隨機挑一個頻率
-    const freq = getTemplate().scale[
-      Math.floor(Math.random() * getTemplate().scale.length)
+    const freq = activeScale[
+      Math.floor(Math.random() * activeScale.length)
     ];
 
     // ── 當前風速 ──────────────────────────────────────
