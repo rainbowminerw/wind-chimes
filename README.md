@@ -1,4 +1,4 @@
-# 🎐 風鈴 — Wind Chime Simulator
+# 🎐 風鈴 v0.02 — Wind Chime Simulator
 
 A beautiful wind chime simulator for your desktop.
 
