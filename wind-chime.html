@@ -604,7 +604,85 @@ const voiceSelect  = document.getElementById('voiceSelect');
 voiceSelect.value = currentVoice;
 
 /* ============================================================
-   4. Audio Engine（懶初始化）
+   4.1  WindController — 自然風模擬
+   ============================================================
+
+   用 Perlin Noise 產生平滑變化的風速曲線，影響排程間隔與力度。
+
+   原理：
+   - windStrength(t) = slowLayer × 0.6 + fastLayer × 0.4
+   - slowLayer（~0.05Hz）：主要週期約 20 秒，決定大方向（平靜↔風起）
+   - fastLayer（~0.15Hz）：較快起伏，製造陣風細節
+   - 兩層疊加後 clamp 到 0~1
+
+   Perlin Noise 實作：
+   經典 1D Perlin Noise —— 用 permutation table + fade 曲線產生平滑隨機。
+   不依賴任何外部套件，純 JS，約 40 行。
+   ============================================================ */
+
+// ── 1D Perlin Noise ────────────────────────────────────
+const _perlinPerm = (() => {
+  // 標準 256 個 permutation 值
+  const p = [151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,
+    140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,
+    247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,
+    57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,
+    74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,
+    60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,
+    65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,
+    200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,
+    52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,
+    207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,
+    119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,
+    129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,
+    218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,
+    81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,
+    184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,
+    222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180];
+  // 複製一份讓長度變 512（避免溢位檢查）
+  return p.concat(p);
+})();
+
+function _perlinFade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+function _perlinLerp(a, b, t) { return a + t * (b - a); }
+function _perlinGrad(hash, x) {
+  // 用 hash 最低位元決定梯度方向
+  return (hash & 1) === 0 ? x : -x;
+}
+
+function perlin1D(x) {
+  const X = Math.floor(x) & 255;
+  const xf = x - Math.floor(x);
+  const u = _perlinFade(xf);
+  // 兩個端點的梯度值
+  const g0 = _perlinGrad(_perlinPerm[X],     xf);
+  const g1 = _perlinGrad(_perlinPerm[X + 1], xf - 1);
+  return _perlinLerp(g0, g1, u);
+}
+
+// ── WindController ──────────────────────────────────────
+// 回傳值範圍：0 ~ 1
+// 參數 timeSeconds：以秒為單位的時間（可用 Date.now()/1000 或 Tone.now()）
+function getWindStrength(timeSeconds) {
+  // 第一層（慢速波動，~0.05Hz，週期約 20 秒）
+  const slow = perlin1D(timeSeconds * 0.05);
+  // 第二層（較快細節，~0.15Hz）
+  const fast = perlin1D(timeSeconds * 0.15 + 100); // +100 錯開相位
+  // 疊加：慢層主導 60%，快層細節 40%
+  const raw = slow * 0.6 + fast * 0.4;
+  // 將 perlin 的 [-1, 1] 映射到 [0, 1] 並 clamp
+  return Math.max(0, Math.min(1, raw * 0.6 + 0.5));
+}
+
+// 基速因子：tempoSlider 的值（20~120）映射到速率倍率
+// 60 → 1.0x（正常）、120 → 2.0x（快一倍）、20 → 0.5x（慢一半）
+function getBaseSpeedFactor() {
+  const bpm = parseInt(tempoSlider ? tempoSlider.value : 60, 10);
+  return bpm / 60;
+}
+
+/* ============================================================
+   5. Audio Engine（懶初始化）
    ============================================================
 
    AudioContext 必須在「使用者觸發的互動」中啟動（瀏覽器政策）。
@@ -705,23 +783,24 @@ function playNote(freq, velocity = 0.6) {
 }
 
 /* ============================================================
-   7. 段落音符排程
+   7. 段落音符排程（含自然風效果）
    ============================================================
 
-   每個段落的排程演算法：
+   排程核心：遞迴的隨機敲擊序列。
 
-   1. 根據段落 density 計算「平均音符間隔」
-      avgInterval = 1 / (density × 1.8)
-      為什麼乘 1.8？讓密度 1.0 時平均每秒約 0.55 個音符（不太密）
+   三層速率疊加：
+   ║ 最終間隔 = 段落密度 × 基速因子 × 風速因子 × 隨機因子
+   ║
+   ║ ① 段落密度（section.density）→ 基礎 avgInterval
+   ║ ② 基速因子（speed slider）→ 使用者控制整體快慢
+   ║ ③ 風速因子（Perlin Noise）→ 自然風平滑變化
+   ║ ④ 隨機因子 → 個別音符的亂數變化 + burst 機率
 
-   2. 實際間隔在 avgInterval × [0.5, 1.5] 範圍內隨機（均勻分佈）
-
-   3. 額外隨機修飾：
-      - 25% 機率：間隔減半（密集一連串敲擊，呼應 burst 現象）
-      - 10% 機率：間隔加倍（風減弱的稀疏段落）
-
-   4. 遞迴呼叫 setTimeout，形成無窮隨機序列，直到段落結束
+   力度也受風速微調：
+   ║ velocity = 隨機力度 × (0.7 + windStrength × 0.3)
+   ║          風強時整體稍大聲，但主要還是靠個別隨機
    ============================================================ */
+
 function scheduleSection(sectionIndex) {
   if (!state.playing) return;
 
@@ -734,6 +813,9 @@ function scheduleSection(sectionIndex) {
   // density 0.3 → avgInterval ≈ 1.85s；density 0.9 → avgInterval ≈ 0.62s
   const avgInterval = 1 / (section.density * 1.8);
 
+  // 記錄段落開始時間作為 Perlin Noise 的基準
+  const sectionStartTime = Date.now() / 1000;
+
   function scheduleNext() {
     if (!state.playing || Date.now() >= endTime) return;
 
@@ -741,15 +823,31 @@ function scheduleSection(sectionIndex) {
     const freq = TEMPLATE.scale[
       Math.floor(Math.random() * TEMPLATE.scale.length)
     ];
-    // 力度隨機 0.3 ~ 0.8（偏輕，符合禪風氛圍）
-    const vel  = 0.3 + Math.random() * 0.5;
+
+    // ── 當前風速 ──────────────────────────────────────
+    const elapsed = Date.now() / 1000 - sectionStartTime;
+    const wind = getWindStrength(elapsed);  // 0 ~ 1
+
+    // 力度：原本隨機 0.3 ~ 0.8，再乘風速微調
+    const vel = (0.3 + Math.random() * 0.5) * (0.7 + wind * 0.3);
     playNote(freq, vel);
 
-    // 計算下一個音符的等待時間
-    let interval = avgInterval * (0.5 + Math.random() * 1.0);  // 範圍：[0.5×avg, 1.5×avg]
-    interval = Math.max(0.25, Math.min(2.5, interval));           // 限制在 0.25s ~ 2.5s
+    // ── 計算間隔：三層疊加 ────────────────────────────
+    // ① 基底隨機（原本邏輯）
+    let interval = avgInterval * (0.5 + Math.random() * 1.0);  // [0.5×avg, 1.5×avg]
 
-    // 隨機修飾：1/4 機率減半（burst），1/10 機率加倍（稀疏）
+    // ② 基速因子（tempoSlider：20~120，60=1x）
+    const speedFactor = getBaseSpeedFactor();
+    interval /= speedFactor;   // bpm=120 → speedFactor=2 → interval 減半（更快）
+
+    // ③ 風速因子：風強→間隔縮短
+    const windFactor = 1.0 - wind * 0.5;   // 無風=1.0，最大風=0.5
+    interval *= windFactor;
+
+    // 安全限制（保留原本的上下界）
+    interval = Math.max(0.25, Math.min(2.5, interval));
+
+    // 隨機修飾（保留）：1/4 機率減半（burst），1/10 機率加倍（稀疏）
     if (Math.random() < 0.25) {
       interval *= 0.5;
     } else if (Math.random() < 0.1) {
