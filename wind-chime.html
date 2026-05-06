@@ -644,22 +644,18 @@ const VOICE_PRESETS = {
   // ── 撥弦風鈴 ───────────────────────────────────────────
   pluck: {
     label: '撥弦風鈴',
-    synthClass: 'PluckSynth',
+    // 改用 FMSynth 模擬撥弦聲（Tone.PluckSynth 在 v14.7.77 無輸出，
+    // 自製 Karplus-Strong 也無效，推測是 LowpassCombFilter 有問題）
+    // FM 合成：載波(正弦) + 調制(方波)，harmonicity 控制泛音結構
+    synthClass: 'FMSynth',
     params: {
-      // Karplus-Strong 演算法：粉紅噪聲 → LowpassCombFilter → 自然衰減
-      // attackNoise：噪聲攻擊長度（以週期為單位）。1.5 ≈ 一個半週期
-      //   愈長敲擊感愈重，太長會變成噪音 burst
-      attackNoise: 0.5,
-      // dampening：低通濾波截止頻率（Hz），愈高音色愈亮
-      //   5000 明亮突出
-      dampening:   5000,
-      // resonance：回授量（0~1），愈高共鳴延續愈久
-      //   0.9 讓聲音有足夠的弦振動感且持續
-      resonance:   0.9,
-      // release：釋放時間（秒），resonance ramp down 的時間
-      release:     1.5,
-      // volume：預設輸出已經夠大，設為 0（預設值）
-      volume:      0,
+      harmonicity:        3.2,     // 非整數比，產生類似弦振動的不協調泛音
+      modulationIndex:    8,       // 強 FM 調制，音色豐富
+      oscillator:         { type: 'triangle' },  // 載波：溫和起音
+      modulation:         { type: 'square' },     // 調制：銳利攻擊
+      envelope:           { attack: 0.002, decay: 1.2, sustain: 0, release: 2.0 },
+      modulationEnvelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.8 },
+      volume:             3,       // 音量補償
     },
   },
 };
@@ -849,41 +845,6 @@ function buildSynth(voiceName) {
     metalSynth = new Tone.MembraneSynth(p).connect(reverb);
   } else if (preset.synthClass === 'FMSynth') {
     metalSynth = new Tone.FMSynth(p).connect(reverb);
-  } else if (preset.synthClass === 'PluckSynth') {
-    // 自製 Karplus-Strong 撥弦合成（Tone.PluckSynth 在 v14.7.77 無輸出）
-    // 結構：PinkNoise → LowpassCombFilter(dampening+resonance) → output
-    const noise = new Tone.Noise({ type: 'pink', volume: -6 });
-    const comb = new Tone.FeedbackCombFilter({
-      delayTime: 0.01,       // 初始值，trigger 時即時更新
-      dampening: p.dampening,
-      resonance: p.resonance,
-    });
-    noise.connect(comb);
-    comb.connect(reverb);
-    // 包裝成一個方便呼叫的物件
-    metalSynth = {
-      _noise: noise,
-      _comb: comb,
-      name: 'CustomPluckSynth',
-      triggerAttack: function(freq, time, velocity) {
-        const delaySec = 1 / freq;
-        this._comb.delayTime.setValueAtTime(delaySec, time);
-        this._noise.start(time);
-        const stopTime = time + delaySec * (p.attackNoise || 1);
-        this._noise.stop(stopTime);
-        // resonance 初始值
-        this._comb.resonance.cancelScheduledValues(time);
-        this._comb.resonance.setValueAtTime(p.resonance, time);
-      },
-      triggerRelease: function(time) {
-        // 漸弱 resonance
-        this._comb.resonance.linearRampToValueAtTime(0, time + (p.release || 1));
-      },
-      dispose: function() {
-        this._noise.dispose();
-        this._comb.dispose();
-      },
-    };
   } else {
     // 預設使用一般 Synth（適用於 sine / triangle 等波形）
     metalSynth = new Tone.Synth(p).connect(reverb);
@@ -903,17 +864,8 @@ function buildSynth(voiceName) {
 function playNote(freq, velocity = 0.6) {
   if (!metalSynth) return;
   const now = Tone.now();
-  const voiceName = currentVoice;
-  const synthIsPluck = VOICE_PRESETS[voiceName]?.synthClass === 'PluckSynth';
 
-  if (synthIsPluck) {
-    // PluckSynth 沒有 triggerAttackRelease，需分開呼叫
-    // triggerAttack(freq, time, velocity) — 噪聲 burst + comb filter 啟動
-    // 自然衰減由 resonance/release 參數控制，不主動 triggerRelease
-    metalSynth.triggerAttack(freq, now, velocity);
-  } else {
-    metalSynth.triggerAttackRelease(freq, '8n', now, velocity);
-  }
+  metalSynth.triggerAttackRelease(freq, '8n', now, velocity);
 
   // 在畫面下半部隨機位置產生光球
   const x     = orbCanvas.width  * (0.3 + Math.random() * 0.4) / (window.devicePixelRatio || 1);
