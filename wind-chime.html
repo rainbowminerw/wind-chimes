@@ -644,18 +644,17 @@ const VOICE_PRESETS = {
   // ── 撥弦風鈴 ───────────────────────────────────────────
   pluck: {
     label: '撥弦風鈴',
-    // 改用 FMSynth 模擬撥弦聲（Tone.PluckSynth 在 v14.7.77 無輸出，
-    // 自製 Karplus-Strong 也無效，推測是 LowpassCombFilter 有問題）
-    // FM 合成：載波(正弦) + 調制(方波)，harmonicity 控制泛音結構
+    // 用 FMSynth 模擬撥弦聲（Tone.PluckSynth 在 v14.7.77 無輸出）
+    // FM 合成：載波(正弦) + 調制(方波)
     synthClass: 'FMSynth',
     params: {
-      harmonicity:        3.2,     // 非整數比，產生類似弦振動的不協調泛音
-      modulationIndex:    8,       // 強 FM 調制，音色豐富
-      oscillator:         { type: 'triangle' },  // 載波：溫和起音
-      modulation:         { type: 'square' },     // 調制：銳利攻擊
-      envelope:           { attack: 0.002, decay: 1.2, sustain: 0, release: 2.0 },
-      modulationEnvelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.8 },
-      volume:             3,       // 音量補償
+      harmonicity:        2.0,     // 整數比 2:1，產生溫暖的八度泛音
+      modulationIndex:    18,      // 高調制強度，音色更豐富飽滿
+      oscillator:         { type: 'sine' },     // 載波：純淨溫和
+      modulation:         { type: 'sine' },      // 調制：柔和
+      envelope:           { attack: 0.008, decay: 2.5, sustain: 0, release: 3.5 },
+      modulationEnvelope: { attack: 0.005, decay: 0.8, sustain: 0, release: 1.5 },
+      volume:             4,       // 音量補償
     },
   },
 };
