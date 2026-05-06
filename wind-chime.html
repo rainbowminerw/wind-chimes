@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎐 風鈴 v0.02</title>
+<title>🎐 風鈴 v0.05</title>
 <style>
 /* ============================================================
    wind-chime.html — 風鈴模擬器
@@ -364,8 +364,8 @@ select:focus {
       <div class="control-item half" style="flex:1;">
         <span class="control-label">殘響</span>
         <div class="slider-group">
-          <input type="range" id="reverb" min="0" max="100" value="50">
-          <span class="value-tag" id="reverbVal">50%</span>
+          <input type="range" id="reverb" min="0" max="100" value="60">
+          <span class="value-tag" id="reverbVal">60%</span>
         </div>
       </div>
     </div>
@@ -774,10 +774,11 @@ async function initAudio() {
     parseInt(volumeSlider.value, 10) / 100
   ).toDestination();
 
-  // 殘響效果器（decay 從當前模板讀取）
+  // 殘響效果器（decay + wet 都從當前模板和滑桿讀取）
+  const initialReverbWet = parseInt(reverbSlider.value, 10) / 100;
   reverb = new Tone.Reverb({
-    decay: getTemplate().reverbDecay,                         // 殘響衰減時間（秒）
-    wet: parseInt(reverbSlider.value, 10) / 100,  // 乾濕比例
+    decay: getTemplate().reverbDecay,
+    wet: initialReverbWet,
   }).connect(masterGain);
   await reverb.generate();  // 生成脈衝響應（需等待）
 
@@ -1051,9 +1052,12 @@ templateSelect.addEventListener('change', () => {
   tempoSlider.value = tpl.bpm;
   tempoVal.textContent = tpl.bpm;
 
-  // 切換殘響 decay + wet 不變
+  // 切換殘響：decay 秒數 + 滑桿值同步更新（wet 不變）
   if (reverb) {
     reverb.decay = tpl.reverbDecay;
+    const newReverbVal = Math.round(tpl.reverbDecay / 4.5 * 60);
+    reverbSlider.value = Math.min(100, Math.max(0, newReverbVal));
+    reverbVal.textContent = reverbSlider.value + '%';
   }
 
   // 切換音色為模板建議音色

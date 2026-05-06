@@ -1,4 +1,4 @@
-# 🎐 風鈴 v0.04 — Wind Chime Simulator
+# 🎐 風鈴 v0.05 — Wind Chime Simulator
 
 A beautiful wind chime simulator for your desktop.
 
@@ -6,13 +6,13 @@ A beautiful wind chime simulator for your desktop.
 
 ## ✨ 特色
 
+- 🎼 **場景模板系統** — 三種風格一鍵切換：禪風冥想（五聲音階）、Jazz Ambient（Melodic Minor）、鄉村花園（G 大調）
 - 🌬️ **自然風效果** — 兩層 Perlin Noise 疊加（週期 8s + 3s），S 曲線對比度拉伸，風速平滑變化驅動敲擊密度與力度
 - 🎵 **四種音色**：金屬、玻璃、陶磁、木質，使用不同的合成器模擬
-- 🎼 **禪風五聲音階**：預設為中國/日本五聲音階（宮商角徵羽）
 - 🌊 **四個段落**：寂靜 → 風起 → 潮湧 → 餘韻，自動循環
 - 🌟 **動態光球粒子**：隨音樂波動，視聽一體的沉浸體驗
 - 📦 **離線使用**：單一 HTML 檔，無需安裝或網路連線
-- 🎚️ **即時控制**：速度滑桿（真正控制基速）、音量、音色、殘響
+- 🎚️ **即時控制**：速度滑桿、音量、音色、殘響，切模板時自動同步
 
 ## 🚀 使用方式
 
