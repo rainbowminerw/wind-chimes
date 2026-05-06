@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎐 風鈴 v0.07</title>
+<title>🎐 風鈴 v0.08</title>
 <style>
 /* ============================================================
    wind-chime.html — 風鈴模擬器
@@ -495,13 +495,14 @@ function buildScale(rootFreq, intervals, octaves = 2) {
 
 const C4 = 261.63, D4 = 293.66, G4 = 392.00;
 
-// ── 禪風和弦音階（7 音 × 3 組，跨 C3~A4 三個八度）──
-// Cmaj9:  C E G B D F A  → 明亮平和，寂靜與潮湧用
-// Dm9:    D F A C E G B  → 微微憂鬱，風起用
-// Am11:   A C E G B D F  → 深邃沉降，餘韻用
-const ZEN_CMAJ9 = buildScale([130.81, 164.81, 196.00, 246.94, 293.66, 349.23, 440.00]);
-const ZEN_DM9   = buildScale([146.83, 174.61, 220.00, 261.63, 329.63, 392.00, 493.88]);
-const ZEN_AM11  = buildScale([110.00, 130.81, 164.81, 196.00, 246.94, 293.66, 349.23]);
+// ── 禪風和弦音階（7 音 × 純粹和弦音，跨三個八度，最低 D3）──
+// Cmaj7:  C E G B  — 寂靜版偏低(E3~C5)、潮湧版偏高(C4~G5)
+// Dm7:    D F A C  — 風起用，最低 D3
+// Am7:    A C E G  — 餘韻用，最低 A3
+const ZEN_CMAJ7_LOW  = buildScale([164.81, 196.00, 246.94, 261.63, 329.63, 392.00, 523.25]);  // E3 G3 B3 C4 E4 G4 C5
+const ZEN_CMAJ7_HIGH = buildScale([261.63, 329.63, 392.00, 493.88, 523.25, 659.25, 783.99]);  // C4 E4 G4 B4 C5 E5 G5
+const ZEN_DM7        = buildScale([146.83, 174.61, 220.00, 261.63, 293.66, 349.23, 440.00]);  // D3 F3 A3 C4 D4 F4 A4
+const ZEN_AM7        = buildScale([220.00, 261.63, 329.63, 392.00, 440.00, 523.25, 659.25]);  // A3 C4 E4 G4 A4 C5 E5
 
 const TEMPLATES = {
   zen: {
@@ -511,10 +512,10 @@ const TEMPLATES = {
     // 段落級音階：每個段落可指定自己的 scale，未指定則 fallback 到此
     scale: buildScale(C4, [0, 2, 4, 7, 9]),
     sections: [
-      { density: 0.30, duration: 40, label: '寂・靜', scale: ZEN_CMAJ9 },
-      { density: 0.55, duration: 50, label: '風・起', scale: ZEN_DM9   },
-      { density: 0.80, duration: 35, label: '潮・湧', scale: ZEN_CMAJ9 },
-      { density: 0.35, duration: 55, label: '餘・韻', scale: ZEN_AM11  },
+      { density: 0.30, duration: 40, label: '寂・靜', scale: ZEN_CMAJ7_LOW  },
+      { density: 0.55, duration: 50, label: '風・起', scale: ZEN_DM7        },
+      { density: 0.80, duration: 35, label: '潮・湧', scale: ZEN_CMAJ7_HIGH },
+      { density: 0.35, duration: 55, label: '餘・韻', scale: ZEN_AM7        },
     ],
     bpm: 60,
     reverbDecay: 4.5,
@@ -648,17 +649,17 @@ const VOICE_PRESETS = {
       // Karplus-Strong 演算法：粉紅噪聲 → LowpassCombFilter → 自然衰減
       // attackNoise：噪聲攻擊長度（以週期為單位）。1.5 ≈ 一個半週期
       //   愈長敲擊感愈重，太長會變成噪音 burst
-      attackNoise: 1.5,
+      attackNoise: 0.5,
       // dampening：低通濾波截止頻率（Hz），愈高音色愈亮
-      //   3000 ≈ 中高頻明亮但不刺耳
-      dampening:   3000,
+      //   5000 明亮突出
+      dampening:   5000,
       // resonance：回授量（0~1），愈高共鳴延續愈久
-      //   0.7 讓聲音自然衰減約 1~2 秒，適合風鈴的短促敲擊
-      resonance:   0.7,
+      //   0.9 讓聲音有足夠的弦振動感且持續
+      resonance:   0.9,
       // release：釋放時間（秒），resonance ramp down 的時間
-      release:     1.2,
-      // volume：音量補償（dB），PluckSynth 預設輸出較小，提升到 -6
-      volume:      -6,
+      release:     1.5,
+      // volume：預設輸出已經夠大，設為 0（預設值）
+      volume:      0,
     },
   },
 };
