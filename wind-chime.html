@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎐 風鈴 v0.05</title>
+<title>🎐 風鈴 v0.06</title>
 <style>
 /* ============================================================
    wind-chime.html — 風鈴模擬器
@@ -390,6 +390,7 @@ select:focus {
       <select id="voiceSelect" style="flex:1; min-width:0;">
         <option value="glass">🔮 玻璃風鈴</option>
         <option value="ceramic">🏺 陶磁風鈴</option>
+        <option value="pluck">🎸 撥弦風鈴</option>
         <option value="wood">🪵 木質風鈴</option>
         <option value="metal">🎵 金屬風鈴</option>
       </select>
@@ -450,7 +451,7 @@ PERFORMANCE OF THIS SOFTWARE.
 
    程式架構（由上而下閱讀）：
    1. TEMPLATE     — 預設音階與段落設定
-   2. VOICE_PRESETS— 四種音色的音色參數
+   2. VOICE_PRESETS— 五種音色的音色參數
    3. 狀態變數     — playing, audioReady, noteTimeouts …
    4. initAudio()  — 懶初始化：使用者第一次點擊播放後才建立音頻
    5. buildSynth() — 根據音色名稱建立對應的 Tone.js 合成器
@@ -624,6 +625,28 @@ const VOICE_PRESETS = {
         decay:   0.5,
         sustain: 0,              // 無 sustain，完全靠 decay 衰減
       },
+    },
+  },
+
+  // ── 撥弦風鈴 ───────────────────────────────────────────
+  pluck: {
+    label: '撥弦風鈴',
+    synthClass: 'PluckSynth',
+    params: {
+      // Karplus-Strong 演算法：粉紅噪聲 → LowpassCombFilter → 自然衰減
+      // attackNoise：噪聲攻擊長度（以週期為單位）。1.5 ≈ 一個半週期
+      //   愈長敲擊感愈重，太長會變成噪音 burst
+      attackNoise: 1.5,
+      // dampening：低通濾波截止頻率（Hz），愈高音色愈亮
+      //   3000 ≈ 中高頻明亮但不刺耳
+      dampening:   3000,
+      // resonance：回授量（0~1），愈高共鳴延續愈久
+      //   0.7 讓聲音自然衰減約 1~2 秒，適合風鈴的短促敲擊
+      resonance:   0.7,
+      // release：釋放時間（秒），resonance ramp down 的時間
+      release:     1.2,
+      // volume：音量補償（dB），PluckSynth 預設輸出較小，提升到 -6
+      volume:      -6,
     },
   },
 };
@@ -813,6 +836,8 @@ function buildSynth(voiceName) {
     metalSynth = new Tone.MembraneSynth(p).connect(reverb);
   } else if (preset.synthClass === 'FMSynth') {
     metalSynth = new Tone.FMSynth(p).connect(reverb);
+  } else if (preset.synthClass === 'PluckSynth') {
+    metalSynth = new Tone.PluckSynth(p).connect(reverb);
   } else {
     // 預設使用一般 Synth（適用於 sine / triangle 等波形）
     metalSynth = new Tone.Synth(p).connect(reverb);
@@ -832,8 +857,17 @@ function buildSynth(voiceName) {
 function playNote(freq, velocity = 0.6) {
   if (!metalSynth) return;
   const now = Tone.now();
+  const voiceName = currentVoice;
+  const synthIsPluck = VOICE_PRESETS[voiceName]?.synthClass === 'PluckSynth';
 
-  metalSynth.triggerAttackRelease(freq, '8n', now, velocity);
+  if (synthIsPluck) {
+    // PluckSynth 沒有 triggerAttackRelease，需分開呼叫
+    // triggerAttack(freq, time, velocity) — 噪聲 burst + comb filter 啟動
+    // 自然衰減由 resonance/release 參數控制，不主動 triggerRelease
+    metalSynth.triggerAttack(freq, now, velocity);
+  } else {
+    metalSynth.triggerAttackRelease(freq, '8n', now, velocity);
+  }
 
   // 在畫面下半部隨機位置產生光球
   const x     = orbCanvas.width  * (0.3 + Math.random() * 0.4) / (window.devicePixelRatio || 1);
