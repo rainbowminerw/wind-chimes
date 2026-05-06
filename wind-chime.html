@@ -613,7 +613,7 @@ voiceSelect.value = currentVoice;
    - slow × 0.35 + fast × 0.65 兩層疊加後 clamp 到 0~1
    - slowLayer（~0.05Hz）：主要週期約 20 秒，決定大方向
    - fastLayer（~0.15Hz）：主導 65%，製造明顯陣風感
-   - 無風時間隔不變，最大風時間隔縮至 1/3（×0.3）
+   - 無風時間隔拉長至 2x，最大風時間隔縮至 0.1x（極密集）
 
    Perlin Noise 實作：
    經典 1D Perlin Noise —— 用 permutation table + fade 曲線產生平滑隨機。
@@ -840,7 +840,7 @@ function scheduleSection(sectionIndex) {
     interval /= speedFactor;   // bpm=120 → speedFactor=2 → interval 減半（更快）
 
     // ③ 風速因子：風強→間隔縮短
-    const windFactor = 1.0 - wind * 0.7;   // 無風=1.0，最大風=0.3（間隔約1/3）
+    const windFactor = 2.0 - wind * 1.9;   // 無風=2.0（間隔拉長），最大風=0.1（極密）
     interval *= windFactor;
 
     // 安全限制（保留原本的上下界）
