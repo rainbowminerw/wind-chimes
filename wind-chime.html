@@ -850,7 +850,40 @@ function buildSynth(voiceName) {
   } else if (preset.synthClass === 'FMSynth') {
     metalSynth = new Tone.FMSynth(p).connect(reverb);
   } else if (preset.synthClass === 'PluckSynth') {
-    metalSynth = new Tone.PluckSynth(p).connect(reverb);
+    // 自製 Karplus-Strong 撥弦合成（Tone.PluckSynth 在 v14.7.77 無輸出）
+    // 結構：PinkNoise → LowpassCombFilter(dampening+resonance) → output
+    const noise = new Tone.Noise({ type: 'pink', volume: -6 });
+    const comb = new Tone.FeedbackCombFilter({
+      delayTime: 0.01,       // 初始值，trigger 時即時更新
+      dampening: p.dampening,
+      resonance: p.resonance,
+    });
+    noise.connect(comb);
+    comb.connect(reverb);
+    // 包裝成一個方便呼叫的物件
+    metalSynth = {
+      _noise: noise,
+      _comb: comb,
+      name: 'CustomPluckSynth',
+      triggerAttack: function(freq, time, velocity) {
+        const delaySec = 1 / freq;
+        this._comb.delayTime.setValueAtTime(delaySec, time);
+        this._noise.start(time);
+        const stopTime = time + delaySec * (p.attackNoise || 1);
+        this._noise.stop(stopTime);
+        // resonance 初始值
+        this._comb.resonance.cancelScheduledValues(time);
+        this._comb.resonance.setValueAtTime(p.resonance, time);
+      },
+      triggerRelease: function(time) {
+        // 漸弱 resonance
+        this._comb.resonance.linearRampToValueAtTime(0, time + (p.release || 1));
+      },
+      dispose: function() {
+        this._noise.dispose();
+        this._comb.dispose();
+      },
+    };
   } else {
     // 預設使用一般 Synth（適用於 sine / triangle 等波形）
     metalSynth = new Tone.Synth(p).connect(reverb);
