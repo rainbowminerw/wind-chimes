@@ -610,10 +610,10 @@ voiceSelect.value = currentVoice;
    用 Perlin Noise 產生平滑變化的風速曲線，影響排程間隔與力度。
 
    原理：
-   - windStrength(t) = slowLayer × 0.6 + fastLayer × 0.4
-   - slowLayer（~0.05Hz）：主要週期約 20 秒，決定大方向（平靜↔風起）
-   - fastLayer（~0.15Hz）：較快起伏，製造陣風細節
-   - 兩層疊加後 clamp 到 0~1
+   - slow × 0.35 + fast × 0.65 兩層疊加後 clamp 到 0~1
+   - slowLayer（~0.05Hz）：主要週期約 20 秒，決定大方向
+   - fastLayer（~0.15Hz）：主導 65%，製造明顯陣風感
+   - 無風時間隔不變，最大風時間隔縮至 1/3（×0.3）
 
    Perlin Noise 實作：
    經典 1D Perlin Noise —— 用 permutation table + fade 曲線產生平滑隨機。
@@ -664,14 +664,13 @@ function perlin1D(x) {
 // 回傳值範圍：0 ~ 1
 // 參數 timeSeconds：以秒為單位的時間（可用 Date.now()/1000 或 Tone.now()）
 function getWindStrength(timeSeconds) {
-  // 第一層（慢速波動，~0.05Hz，週期約 20 秒）
-  const slow = perlin1D(timeSeconds * 0.05);
-  // 第二層（較快細節，~0.15Hz）
-  const fast = perlin1D(timeSeconds * 0.15 + 100); // +100 錯開相位
-  // 疊加：慢層主導 60%，快層細節 40%
-  const raw = slow * 0.6 + fast * 0.4;
-  // 將 perlin 的 [-1, 1] 映射到 [0, 1] 並 clamp
-  return Math.max(0, Math.min(1, raw * 0.6 + 0.5));
+  // 第一層（慢速波動，~0.05Hz，週期約 20 秒）× 0.35
+  const slow = perlin1D(timeSeconds * 0.05) * 0.35;
+  // 第二層（較快陣風細節，~0.15Hz）× 0.65 主導
+  const fast = perlin1D(timeSeconds * 0.15 + 100) * 0.65; // +100 錯開相位
+  // 疊加後將 perlin 的 [-1, 1] 映射到 [0, 1] 並 clamp
+  const raw = slow + fast;
+  return Math.max(0, Math.min(1, raw * 0.5 + 0.5));
 }
 
 // 基速因子：tempoSlider 的值（20~120）映射到速率倍率
@@ -793,7 +792,7 @@ function playNote(freq, velocity = 0.6) {
    ║
    ║ ① 段落密度（section.density）→ 基礎 avgInterval
    ║ ② 基速因子（speed slider）→ 使用者控制整體快慢
-   ║ ③ 風速因子（Perlin Noise）→ 自然風平滑變化
+   ║ ③ 風速因子（Perlin Noise）→ 自然風平滑變化，最大風縮至 1/3
    ║ ④ 隨機因子 → 個別音符的亂數變化 + burst 機率
 
    力度也受風速微調：
@@ -841,7 +840,7 @@ function scheduleSection(sectionIndex) {
     interval /= speedFactor;   // bpm=120 → speedFactor=2 → interval 減半（更快）
 
     // ③ 風速因子：風強→間隔縮短
-    const windFactor = 1.0 - wind * 0.5;   // 無風=1.0，最大風=0.5
+    const windFactor = 1.0 - wind * 0.7;   // 無風=1.0，最大風=0.3（間隔約1/3）
     interval *= windFactor;
 
     // 安全限制（保留原本的上下界）
