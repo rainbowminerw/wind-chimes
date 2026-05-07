@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎐 風鈴 v0.09</title>
+<title>🎐 風鈴 v0.10</title>
 <style>
 /* ============================================================
    wind-chime.html — 風鈴模擬器
@@ -560,7 +560,7 @@ const TEMPLATES = {
     ],
     bpm: 90,
     reverbDecay: 1.8,
-    voiceHint: 'metal',
+    voiceHint: 'pluck',
   },
 
   jazz: {
@@ -576,7 +576,7 @@ const TEMPLATES = {
     ],
     bpm: 70,
     reverbDecay: 3.5,
-    voiceHint: 'ceramic',
+    voiceHint: 'wood',
   },
 
   star: {
@@ -592,7 +592,7 @@ const TEMPLATES = {
     ],
     bpm: 50,
     reverbDecay: 6.0,
-    voiceHint: 'glass',
+    voiceHint: 'ceramic',
   },
 };
 
@@ -922,18 +922,53 @@ function playNote(freq, velocity = 0.6) {
 }
 
 /* ============================================================
+   6-b. 點擊觸發音符（輕聲短奏，同一顆合成器）
+   ============================================================
+   使用者點擊卡面時觸發一個隨機音符。
+   跟主演奏共用同一顆 metalSynth，音色 100% 一致。
+   風鈴音符都是短音，triggerAttackRelease 不會互相干擾。
+   ============================================================ */
+function playTapNote() {
+  if (!metalSynth || !state.audioReady) {
+    // 如果音頻還沒初始化，點擊就當成啟動觸發
+    initAudio();
+    return;
+  }
+
+  // 從當前段落音階隨機取一個頻率
+  const tpl = getTemplate();
+  // 如果有正在播放的段落就用它的音階，否則用第四段落（偏低音域）
+  const sectionIdx = state.currentSection >= 0 ? state.currentSection : 3;
+  const activeScale = tpl.sections[sectionIdx].scale || tpl.scale;
+  const freq = activeScale[Math.floor(Math.random() * activeScale.length)];
+
+  // 輕聲播放，跟主演奏同一顆合成器
+  metalSynth.triggerAttackRelease(freq, '32n', Tone.now(), 0.35 + Math.random() * 0.25);
+}
+
+/* ============================================================
    7. 段落音符排程（含自然風效果）
    ============================================================
 
    排程核心：遞迴的隨機敲擊序列。
 
-   三層速率疊加：
-   ║ 最終間隔 = 段落密度 × 基速因子 × 風速因子 × 隨機因子
+   六層速率疊加：
+   ║ 最終間隔 = 基底搖擺 → 基速 → burst/稀疏 → 風速(2^p) → 裁切[0.1, 5]
    ║
    ║ ① 段落密度（section.density）→ 基礎 avgInterval
-   ║ ② 基速因子（speed slider）→ 使用者控制整體快慢
-   ║ ③ 風速因子（Perlin Noise）→ 自然風平滑變化，最大風縮至 1/3
-   ║ ④ 隨機因子 → 個別音符的亂數變化 + burst 機率
+   ║    density=0.3 → avgInterval≈1.85s，density=0.9 → avgInterval≈0.62s
+   ║
+   ║ ② 基底搖擺：Math.random × [0.5, 1.5]，均勻隨機 ±50%
+   ║
+   ║ ③ 基速因子（tempoSlider，bpm/60）→ 使用者控制整體快慢
+   ║    bpm=60→×1、120→×2（更快）、20→×0.5（更慢）
+   ║
+   ║ ④ 隨機修飾：1/4 機率 burst（×0.5）、1/10 機率稀疏（×2）
+   ║
+   ║ ⑤ 風速因子：wind(0~1) → p(1.5~-3.5)，間隔 × 2^p
+   ║    無風(p>0)→間隔拉長，強風(p<0)→間隔縮短
+   ║
+   ║ ⑥ 安全裁切 [0.1s, 5s]
 
    力度也受風速微調：
    ║ velocity = 隨機力度 × (0.7 + windStrength × 0.3)
@@ -981,19 +1016,21 @@ function scheduleSection(sectionIndex) {
     const speedFactor = getBaseSpeedFactor();
     interval /= speedFactor;   // bpm=120 → speedFactor=2 → interval 減半（更快）
 
-    // ③ 風速因子：風強→間隔縮短
-    const windFactor = 2.0 - wind * 1.9;   // 無風=2.0（間隔拉長），最大風=0.1（極密）
-    interval *= windFactor;
-
-    // 安全限制（保留原本的上下界）
-    interval = Math.max(0.25, Math.min(2.5, interval));
-
-    // 隨機修飾（保留）：1/4 機率減半（burst），1/10 機率加倍（稀疏）
+    // ③ 隨機修飾：burst / 稀疏
     if (Math.random() < 0.25) {
-      interval *= 0.5;
+      interval *= 0.5;   // 1/4 機率減半（burst）
     } else if (Math.random() < 0.1) {
-      interval *= 2;
+      interval *= 2;     // 1/10 機率加倍（稀疏）
     }
+
+    // ④ 風速因子：Perlin Noise 風速映射為冪次
+    // wind 範圍 0~1 → p 範圍 1.5~-3.5（無風→慢，強風→快）
+    // 間隔 × 2^p，p>0 拉長間隔（無風舒緩），p<0 縮短（強風密集）
+    const windP = 1.5 - wind * 5.0;       // wind=0 → p=1.5，wind=1 → p=-3.5
+    interval *= Math.pow(2, windP);
+
+    // 安全限制
+    interval = Math.max(0.1, Math.min(5.0, interval));
 
     const id = setTimeout(scheduleNext, interval * 1000);
     noteTimeouts.push(id);
@@ -1319,6 +1356,7 @@ document.addEventListener('touchend', e => {
     e.changedTouches[0].clientY - rect.top,
     4 + Math.floor(Math.random() * 4)
   );
+  playTapNote();  // ✨ 點擊出聲
 }, { passive: true });
 
 // 滑鼠點擊
@@ -1331,6 +1369,7 @@ document.addEventListener('mousedown', e => {
     e.clientY - rect.top,
     4 + Math.floor(Math.random() * 4)
   );
+  playTapNote();  // ✨ 點擊出聲
 });
 
 /* ============================================================
