@@ -1060,8 +1060,8 @@ function scheduleSection(sectionIndex) {
   const sectionStartTime = Date.now() / 1000;
 
   // ── 段落級淡入淡出 ────────────────────────────
-  const SECTION_FADE = 2;  // 淡入淡出秒數
-  const useFade = section.duration >= 10;
+  const SECTION_FADE = 4;  // 淡入淡出秒數
+  const useFade = section.duration >= 12;
   // 從音量滑桿讀取目標音量，避免上一段的 fade out 影響
   const targetVol = parseInt(volumeSlider ? volumeSlider.value : 50, 10) / 100;
   if (useFade && masterGain) {
