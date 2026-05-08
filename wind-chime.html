@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎐 風鈴 v0.12</title>
+<title>🎐 風鈴 v0.13</title>
 <style>
 /* ============================================================
    wind-chime.html — 風鈴模擬器
@@ -204,6 +204,18 @@ body {
   opacity: 0.7;
 }
 
+.footer a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.footer a:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* ============================================================
    控制面板
    ============================================================ */
@@ -218,17 +230,14 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 /* 速度 + 殘響：兩欄並列 */
-.control-row.two-col {
-  justify-content: space-between;
-}
-
 .control-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   flex: 1;
 }
 
@@ -249,7 +258,7 @@ body {
 .slider-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
   flex: 1;
 }
 
@@ -278,7 +287,7 @@ input[type="range"]::-webkit-slider-thumb {
 .value-tag {
   font-size: 0.75rem;
   color: var(--text-secondary);
-  min-width: 30px;
+  min-width: 18px;
   text-align: right;
 }
 
@@ -349,27 +358,27 @@ select:focus {
   <!-- 控制面板 -->
   <div class="controls">
     <!-- 音量（單獨一行，flex 對齊速度/殘響） -->
-    <div class="control-row" style="display:flex; align-items:center; gap:6px;">
+    <div class="control-row" style="display:flex; align-items:center; gap:3px;">
       <span class="control-label" style="min-width:32px; flex-shrink:0;">音量</span>
       <div class="slider-group">
-        <input type="range" id="volume" min="0" max="100" value="45">
-        <span class="value-tag" id="volumeVal">45%</span>
+        <input type="range" id="volume" min="0" max="100" value="50">
+        <span class="value-tag" id="volumeVal">50%</span>
       </div>
     </div>
 
     <!-- 速度 + 殘響（並列兩欄） -->
-    <div class="control-row two-col" style="gap:16px;">
-      <div class="control-item half" style="flex:1;">
+    <div class="control-row two-col" style="gap:6px;">
+      <div class="control-item half">
         <span class="control-label">速度</span>
         <div class="slider-group">
-          <input type="range" id="tempo" min="20" max="120" value="60">
+          <input type="range" id="tempo" min="20" max="120" value="60" style="width:100%;">
           <span class="value-tag" id="tempoVal">60</span>
         </div>
       </div>
-      <div class="control-item half" style="flex:1;">
+      <div class="control-item half">
         <span class="control-label">殘響</span>
         <div class="slider-group">
-          <input type="range" id="reverb" min="0" max="100" value="60">
+          <input type="range" id="reverb" min="0" max="100" value="60" style="width:100%;">
           <span class="value-tag" id="reverbVal">60%</span>
         </div>
       </div>
@@ -399,13 +408,12 @@ select:focus {
         <option value="ceramic">🏺 陶磁風鈴</option>
         <option value="pluck">🎸 敲弦風鈴</option>
         <option value="wood">🪵 木質風鈴</option>
-        <option value="metal">🎵 金屬風鈴</option>
       </select>
     </div>
   </div>
 
   <div class="footer">
-    MIT License — 2026
+    <a href="https://github.com/rainbowminerw/wind-chimes" target="_blank">MIT License &mdash; 2026 rainbowminer</a>
   </div>
 </div>
 
@@ -523,12 +531,11 @@ const GDN_D7         = buildScale([146.83, 185.00, 220.00, 261.63, 293.66, 369.9
 const GDN_GMAJ7_HIGH = buildScale([392.00, 493.88, 587.33, 739.99, 783.99, 987.77, 1174.66]); // G4 B4 D5 F#5 G5 B5 D6
 
 // ── Jazz Ambient — C Melodic Minor ────────────────────
-// CmM7: C Eb G B → Fm7: F Ab C Eb → Dm7b5: D F Ab C
-// ABAC：CmM7(低) → Fm7 → CmM7(高) → Dm7b5
+// 紐澳良爵士：暮色(CmM7) → 微醺(E♭maj7) → 即興(G7) → 餘韻(C6)
 const JAZ_CM7_LOW    = buildScale([261.63, 311.13, 392.00, 493.88, 523.25, 622.25, 783.99]); // C4 Eb4 G4 B4 C5 Eb5 G5
-const JAZ_FM7        = buildScale([174.61, 207.65, 261.63, 311.13, 349.23, 415.30, 523.25]); // F3 Ab3 C4 Eb4 F4 Ab4 C5
-const JAZ_CM7_HIGH   = buildScale([311.13, 392.00, 493.88, 523.25, 622.25, 783.99, 987.77]); // Eb4 G4 B4 C5 Eb5 G5 B5
-const JAZ_DM7B5      = buildScale([146.83, 174.61, 207.65, 261.63, 293.66, 349.23, 415.30]); // D3 F3 Ab3 C4 D4 F4 Ab4
+const JAZ_EBMAJ7      = buildScale([155.56, 196.00, 233.08, 293.66, 311.13, 392.00, 466.16, 587.33]); // Eb3 G3 Bb3 D4 Eb4 G4 Bb4 D5
+const JAZ_G7          = buildScale([196.00, 246.94, 293.66, 349.23, 392.00, 493.88, 587.33]);  // G3 B3 D4 F4 G4 B4 D5
+const JAZ_C6          = buildScale([261.63, 329.63, 392.00, 440.00, 523.25, 659.25, 783.99]);  // C4 E4 G4 A4 C5 E5 G5
 
 // ── 星空夜語 ────────────────────────────────────────
 // 敘事弧線：神秘(Dm9) → 壯美(Gmaj9/Bm7) → 空靈(Bm7b5) → 舒眠(Dm7)
@@ -548,10 +555,10 @@ const TEMPLATES = {
     // 段落級音階：每個段落可指定自己的 scale，未指定則 fallback 到此
     scale: buildScale(C4, [0, 2, 4, 7, 9]),
     sections: [
-      { density: 0.30, duration: 80, label: '寂・靜', scale: ZEN_S1 },
-      { density: 0.55, duration: 80, label: '風・起', scale: ZEN_S2 },
-      { density: 0.80, duration: 75, label: '潮・湧', scale: ZEN_S3 },
-      { density: 0.35, duration: 85, label: '餘・韻', scale: ZEN_S4 },
+      { density: 0.30, duration: 130, label: '寂・靜', scale: ZEN_S1 },
+      { density: 0.55, duration: 130, label: '風・起', scale: ZEN_S2 },
+      { density: 0.80, duration: 120, label: '潮・湧', scale: ZEN_S3 },
+      { density: 0.35, duration: 135, label: '餘・韻', scale: ZEN_S4 },
     ],
     bpm: 60,
     reverbDecay: 4.5,
@@ -564,10 +571,10 @@ const TEMPLATES = {
     desc: '田園・甜美・歡快',
     scale: buildScale(G4, [0, 2, 4, 5, 7, 9, 11]),
     sections: [
-      { density: 0.35, duration: 80, label: '晨・露', scale: GDN_G6         },
-      { density: 0.55, duration: 85, label: '花・開', scale: GDN_AM7        },
-      { density: 0.60, duration: 70, label: '蝶・舞', scale: GDN_D7         },
-      { density: 0.40, duration: 85, label: '暮・歸', scale: GDN_GMAJ7_HIGH },
+      { density: 0.35, duration: 130, label: '晨・露', scale: GDN_G6         },
+      { density: 0.55, duration: 135, label: '花・開', scale: GDN_AM7        },
+      { density: 0.60, duration: 110, label: '蝶・舞', scale: GDN_D7         },
+      { density: 0.40, duration: 135, label: '暮・歸', scale: GDN_GMAJ7_HIGH },
     ],
     bpm: 90,
     reverbDecay: 1.8,
@@ -580,10 +587,10 @@ const TEMPLATES = {
     desc: '慵懶・暗色調・深夜',
     scale: buildScale(C4, [0, 2, 3, 5, 7, 9, 11]),
     sections: [
-      { density: 0.25, duration: 50, label: '暮・色', scale: JAZ_CM7_LOW  },
-      { density: 0.50, duration: 45, label: '微・醺', scale: JAZ_FM7      },
-      { density: 0.70, duration: 30, label: '即・興', scale: JAZ_CM7_HIGH },
-      { density: 0.30, duration: 55, label: '餘・韻', scale: JAZ_DM7B5    },
+      { density: 0.35, duration: 130, label: '暮・色', scale: JAZ_CM7_LOW },
+      { density: 0.45, duration: 135, label: '微・醺', scale: JAZ_EBMAJ7   },
+      { density: 0.55, duration: 120, label: '即・興', scale: JAZ_G7       },
+      { density: 0.35, duration: 130, label: '餘・韻', scale: JAZ_C6       },
     ],
     bpm: 70,
     reverbDecay: 3.5,
@@ -596,10 +603,10 @@ const TEMPLATES = {
     desc: '神秘・壯美・入夢',
     scale: buildScale(146.83, [0, 2, 4, 5, 7, 9, 11]),
     sections: [
-      { density: 0.30, duration: 85, label: '星・光', scale: STR_DM9      },
-      { density: 0.55, duration: 100, label: '銀・河', scale: STR_GMAJ9    },
-      { density: 0.40, duration: 75, label: '流・星', scale: STR_BM7B5    },
-      { density: 0.30, duration: 95, label: '夜・語', scale: STR_DM7_SLEEP },
+      { density: 0.30, duration: 135, label: '星・光', scale: STR_DM9      },
+      { density: 0.55, duration: 160, label: '銀・河', scale: STR_GMAJ9    },
+      { density: 0.40, duration: 120, label: '流・星', scale: STR_BM7B5    },
+      { density: 0.30, duration: 150, label: '夜・語', scale: STR_DM7_SLEEP },
     ],
     bpm: 65,
     reverbDecay: 5.0,
@@ -628,28 +635,6 @@ function getTemplate() { return TEMPLATES[currentTemplateId]; }
    ============================================================ */
 const VOICE_PRESETS = {
 
-  // ── 金屬風鈴 ───────────────────────────────────────────
-  metal: {
-    label: '金屬風鈴',
-    synthClass: 'MetalSynth',
-    params: {
-      // frequency：基礎頻率（Hz）。金屬風鈴的共振峰集中在此頻率附近
-      frequency:       500,
-      // envelope：ADSR 包絡（attack / decay / sustain / release）
-      //   attack：攻擊時間（秒），瞬間擊發
-      //   decay：衰減到 sustain 的時間
-      //   sustain：保持音量（0 = 完全衰減，像敲擊聲）
-      //   release：釋放時間（秒）
-      envelope:       { attack: 0.001, decay: 2.5, sustain: 0.05, release: 4.0 },
-      // harmonicity：諧波比。5.1 表示諧波頻率是基礎頻率的 5.1 倍
-      //   越高聲音越玲瓏明亮，官方 bembe 設定值為 12.1
-      harmonicity:    12.0,
-      modulationIndex: 20,   // 調制指數：FM 合成強度
-      resonance:      800,  // 共振峰頻率：越低音越柔和
-      octaves:        1.5,  // 諧波延伸八度數
-    },
-  },
-
   // ── 玻璃風鈴 ───────────────────────────────────────────
   glass: {
     label: '玻璃風鈴',
@@ -663,7 +648,7 @@ const VOICE_PRESETS = {
       modulation:        { type: 'square'  },  // 調制波形
       envelope:          { attack: 0.003, decay: 0.55, sustain: 0.2, release: 2.0 },
       modulationEnvelope:{ attack: 0.001, decay: 0.3,  sustain: 0.05, release: 1.2 },
-      volume:            2,     // 音量補償（高頻音色聽起來較小，需要提升）
+      volume:            2.8,     // 音量補償（+40%）
     },
   },
 
@@ -674,6 +659,7 @@ const VOICE_PRESETS = {
     params: {
       oscillator: { type: 'sine' },  // 單一正弦波，頻譜乾淨，低頻厚實
       envelope:   { attack: 0.003, decay: 0.8, sustain: 0.2, release: 4.0 },
+      volume:     -0.8,  // 減少 20%
     },
   },
 
@@ -691,6 +677,7 @@ const VOICE_PRESETS = {
         decay:   0.5,
         sustain: 0,              // 無 sustain，完全靠 decay 衰減
       },
+      volume:     -0.8,  // 減少 20%
     },
   },
 
@@ -703,6 +690,7 @@ const VOICE_PRESETS = {
     params: {
       playbackRange: [0.25, 3.5],  // 播放速率範圍（0.25x~3.5x，產生音高變化）
       volume: 0,                   // Player 預設音量（0dB，但 rampTo 負責動態控制）
+      baseFreq: 130.82,            // C3（降八度作為基礎，讓移調範圍更廣）
     },
   },
 
@@ -719,7 +707,7 @@ const VOICE_PRESETS = {
       modulation:         { type: 'sine' },      // 調制：柔和
       envelope:           { attack: 0.008, decay: 2.5, sustain: 0, release: 3.5 },
       modulationEnvelope: { attack: 0.005, decay: 0.8, sustain: 0, release: 1.5 },
-      volume:             4,       // 音量補償
+      volume:             3.2,       // 音量補償（減少 20%）
     },
   },
 };
@@ -955,7 +943,7 @@ function playNote(freq, velocity = 0.6) {
   if (preset && preset.synthClass === 'Player') {
     // Player 模式：設 playbackRate 變音高後播放
     const [lo, hi] = preset.params.playbackRange || [0.25, 3.5];
-    const baseFreq = 261.63;
+    const baseFreq = preset.params.baseFreq || 261.63;
     const rate = Math.max(lo, Math.min(hi, freq / baseFreq));
     if (metalSynth.loaded) {
       metalSynth.playbackRate = rate;
@@ -1000,7 +988,7 @@ function playTapNote() {
   if (VOICE_PRESETS[currentVoice].synthClass === 'Player') {
     // Player 模式輕聲播放
     const [lo, hi] = VOICE_PRESETS[currentVoice].params.playbackRange || [0.25, 3.5];
-    const baseFreq = 261.63;
+    const baseFreq = VOICE_PRESETS[currentVoice].params.baseFreq || 261.63;
     const rate = Math.max(lo, Math.min(hi, freq / baseFreq));
     if (metalSynth && metalSynth.loaded) {
       metalSynth.playbackRate = rate;

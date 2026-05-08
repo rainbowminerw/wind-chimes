@@ -1,4 +1,4 @@
-# 🎐 風鈴 v0.12 — Wind Chime Simulator
+# 🎐 風鈴 v0.13 — Wind Chime Simulator
 
 A beautiful wind chime simulator for your desktop.
 
@@ -114,6 +114,9 @@ Tone.js 已內嵌於 `wind-chime.html` 檔案中，確保完全離線使用。
 | v0.12 | 🔧 水晶 playbackRange 放寬至 [0.25, 3.5]，解鎖完整七音音高範圍 |
 | v0.12 | 🧘 禪風模板改為五聲懸浮和弦方案（C G D A / Am7 / Dm7），段落間 4/7 共同音設計 |
 | v0.12 | 🌌 **星空夜語全面重構**：神秘(Dm9)→壯美(Gmaj9)→空靈(Bm7b5)→舒眠(Dm7)，密度 0.30~0.55，BPM 65 |
+| v0.13 | 🎨 **CSS 速度/殘響 input width:100% 自適應**：.control-item.half 移除 inline flex:1，.control-row 加 min-width:0，移除多餘 max-width 限制 |
+| v0.13 | 🎵 水晶音色 baseFreq 130.82(C3)、playbackRate 0.25~3.5，音量重平衡（glass+40%、ceramic/metal/wood -20%），移除 metal preset |
+| v0.13 | 🎼 模板各延長 ~60%（新和弦：禪風/星空/花園/Jazz），crossfade 4s（SECTION_FADE=4, rampTo），預設音量 50% |
 
 ### 🔜 待規劃
 
