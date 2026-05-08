@@ -515,12 +515,12 @@ const ZEN_S3 = buildScale([261.63, 293.66, 392.00, 440.00, 523.26, 587.32, 784.0
 const ZEN_S4 = buildScale([293.66, 349.23, 440.00, 523.26, 587.32, 698.46, 880.00]);
 
 // ── 鄉村花園 — G 大調 ─────────────────────────────────
-// Gmaj7: G B D F# → Am7: A C E G → D7: D F# A C
-// ABAC：Gmaj7(低) → Am7 → Gmaj7(高) → D7
-const GDN_GMAJ7_LOW  = buildScale([196.00, 246.94, 293.66, 369.99, 392.00, 493.88, 587.33]);  // G3 B3 D4 F#4 G4 B4 D5
+// 美式鄉村經典 I→ii→V→I 進行
+// 晨‧露(G6) → 花‧開(Am7) → 蝶‧舞(D7) → 暮‧歸(Gmaj7)
+const GDN_G6         = buildScale([196.00, 246.94, 293.66, 329.63, 392.00, 493.88, 587.33, 659.25]); // G3 B3 D4 E4 G4 B4 D5 E5
 const GDN_AM7        = buildScale([220.00, 261.63, 329.63, 392.00, 440.00, 523.25, 659.25]);  // A3 C4 E4 G4 A4 C5 E5
-const GDN_GMAJ7_HIGH = buildScale([392.00, 493.88, 587.33, 739.99, 783.99, 987.77, 1174.66]); // G4 B4 D5 F#5 G5 B5 D6
 const GDN_D7         = buildScale([146.83, 185.00, 220.00, 261.63, 293.66, 369.99, 440.00]);  // D3 F#3 A3 C4 D4 F#4 A4
+const GDN_GMAJ7_HIGH = buildScale([392.00, 493.88, 587.33, 739.99, 783.99, 987.77, 1174.66]); // G4 B4 D5 F#5 G5 B5 D6
 
 // ── Jazz Ambient — C Melodic Minor ────────────────────
 // CmM7: C Eb G B → Fm7: F Ab C Eb → Dm7b5: D F Ab C
@@ -561,13 +561,13 @@ const TEMPLATES = {
   garden: {
     id: 'garden',
     label: '鄉村花園',
-    desc: '輕快・愉悅・活潑',
+    desc: '田園・甜美・歡快',
     scale: buildScale(G4, [0, 2, 4, 5, 7, 9, 11]),
     sections: [
-      { density: 0.35, duration: 40, label: '晨・露', scale: GDN_GMAJ7_LOW  },
-      { density: 0.60, duration: 45, label: '花・開', scale: GDN_AM7        },
-      { density: 0.85, duration: 30, label: '蝶・舞', scale: GDN_GMAJ7_HIGH },
-      { density: 0.40, duration: 50, label: '暮・歸', scale: GDN_D7         },
+      { density: 0.35, duration: 80, label: '晨・露', scale: GDN_G6         },
+      { density: 0.55, duration: 85, label: '花・開', scale: GDN_AM7        },
+      { density: 0.60, duration: 70, label: '蝶・舞', scale: GDN_D7         },
+      { density: 0.40, duration: 85, label: '暮・歸', scale: GDN_GMAJ7_HIGH },
     ],
     bpm: 90,
     reverbDecay: 1.8,
