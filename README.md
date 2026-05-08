@@ -14,7 +14,7 @@ A beautiful wind chime simulator for your desktop.
   - 🎷 Jazz Ambient — Melodic Minor CmM7 / Fm7 / Dm7b5，慵懶深夜
   - 🌌 **星空夜語** — 敘事弧線：神秘(Dm9) → 壯美(Gmaj9) → 空靈(Bm7b5) → 舒眠(Dm7)
 - 🌬️ **自然風效果** — 兩層 Perlin Noise 疊加（週期 8s + 3s），S 曲線對比度拉伸，風速平滑變化驅動敲擊密度與力度
-- 🎵 **六種音色**：金屬、玻璃、💎水晶音效（真實 Sample）、陶瓷、木質、敲弦（FMSynth）
+- 🎵 **五種音色**：玻璃、💎水晶音效（真實 Sample）、陶瓷、木質、敲弦（FMSynth）
 - 🌊 **四個段落**：自動循環，段落間共同音設計（60%~80% 保留），轉換順滑
 - 🌟 **動態光球粒子**：隨音樂波動，視聽一體的沉浸體驗
 - 📦 **離線使用**：單一 HTML 檔，無需安裝或網路連線
