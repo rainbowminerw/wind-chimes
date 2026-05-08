@@ -1059,8 +1059,26 @@ function scheduleSection(sectionIndex) {
   // 記錄段落開始時間作為 Perlin Noise 的基準
   const sectionStartTime = Date.now() / 1000;
 
+  // ── 段落級淡入淡出 ────────────────────────────
+  const SECTION_FADE = 2;  // 淡入淡出秒數
+  const useFade = section.duration >= 10;
+  if (useFade && masterGain) {
+    // 取目前 masterGain 目標值（音量滑桿決定），淡入 2 秒到達
+    const targetVol = masterGain.gain.value;
+    masterGain.gain.setValueAtTime(0, Tone.now());
+    masterGain.gain.rampTo(targetVol, SECTION_FADE);
+  }
+
   function scheduleNext() {
     if (!state.playing || Date.now() >= endTime) return;
+
+    // ── 淡出：段落剩下不到 2 秒時開始 ──────────
+    if (useFade && masterGain) {
+      const timeLeft = (endTime - Date.now()) / 1000;
+      if (timeLeft < SECTION_FADE && timeLeft > 0) {
+        masterGain.gain.rampTo(0, timeLeft);
+      }
+    }
 
     // 從音階中隨機挑一個頻率
     const freq = activeScale[
