@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎐 風鈴 v0.13</title>
+<title>🎐 風鈴 v0.14</title>
 <style>
 /* ============================================================
    wind-chime.html — 風鈴模擬器
@@ -361,8 +361,8 @@ select:focus {
     <div class="control-row" style="display:flex; align-items:center; gap:3px;">
       <span class="control-label" style="min-width:32px; flex-shrink:0;">音量</span>
       <div class="slider-group">
-        <input type="range" id="volume" min="0" max="100" value="50">
-        <span class="value-tag" id="volumeVal">50%</span>
+        <input type="range" id="volume" min="0" max="100" value="40">
+        <span class="value-tag" id="volumeVal">40%</span>
       </div>
     </div>
 
@@ -688,9 +688,9 @@ const VOICE_PRESETS = {
     // sampleUrl 相對於 HTML 檔案所在目錄
     sampleUrl: CRYSTAL_SAMPLE,
     params: {
-      playbackRange: [0.25, 3.5],  // 播放速率範圍（0.25x~3.5x，產生音高變化）
+      playbackRange: [0.15, 4.0],  // 播放速率範圍（0.15x~4.0x，涵蓋 C2~G7 以上）
       volume: 0,                   // Player 預設音量（0dB，但 rampTo 負責動態控制）
-      baseFreq: 130.82,            // C3（降八度作為基礎，讓移調範圍更廣）
+      baseFreq: 659.25,            // E5（水晶 sample 原始音高，freq/659.25 → 自然 rate 映射）
     },
   },
 
