@@ -699,7 +699,7 @@ const VOICE_PRESETS = {
     // sampleUrl 相對於 HTML 檔案所在目錄
     sampleUrl: CRYSTAL_SAMPLE,
     params: {
-      playbackRange: [0.4, 2.5],  // 播放速率範圍（0.4x~2.5x，產生音高變化）
+      playbackRange: [0.25, 3.5],  // 播放速率範圍（0.25x~3.5x，產生音高變化）
       volume: 0,                   // Player 預設音量（0dB，但 rampTo 負責動態控制）
     },
   },
@@ -952,7 +952,7 @@ function playNote(freq, velocity = 0.6) {
   const preset = VOICE_PRESETS[currentVoice];
   if (preset && preset.synthClass === 'Player') {
     // Player 模式：設 playbackRate 變音高後播放
-    const [lo, hi] = preset.params.playbackRange || [0.4, 2.5];
+    const [lo, hi] = preset.params.playbackRange || [0.25, 3.5];
     const baseFreq = 261.63;
     const rate = Math.max(lo, Math.min(hi, freq / baseFreq));
     if (metalSynth.loaded) {
@@ -997,7 +997,7 @@ function playTapNote() {
   // 輕聲播放，跟主演奏同一顆合成器
   if (VOICE_PRESETS[currentVoice].synthClass === 'Player') {
     // Player 模式輕聲播放
-    const [lo, hi] = VOICE_PRESETS[currentVoice].params.playbackRange || [0.4, 2.5];
+    const [lo, hi] = VOICE_PRESETS[currentVoice].params.playbackRange || [0.25, 3.5];
     const baseFreq = 261.63;
     const rate = Math.max(lo, Math.min(hi, freq / baseFreq));
     if (metalSynth && metalSynth.loaded) {
