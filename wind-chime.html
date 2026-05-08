@@ -530,13 +530,15 @@ const JAZ_FM7        = buildScale([174.61, 207.65, 261.63, 311.13, 349.23, 415.3
 const JAZ_CM7_HIGH   = buildScale([311.13, 392.00, 493.88, 523.25, 622.25, 783.99, 987.77]); // Eb4 G4 B4 C5 Eb5 G5 B5
 const JAZ_DM7B5      = buildScale([146.83, 174.61, 207.65, 261.63, 293.66, 349.23, 415.30]); // D3 F3 Ab3 C4 D4 F4 Ab4
 
-// ── 星空夜語 — D Dorian ──────────────────────────────
-// Dm7: D F A C → Gmaj7: G B D F# → Em7: E G B D
-// ABAC：Dm7(低) → Gmaj7 → Dm7(中) → Em7
-const STR_DM7_LOW    = buildScale([146.83, 174.61, 220.00, 261.63, 293.66, 349.23, 440.00]); // D3 F3 A3 C4 D4 F4 A4
-const STR_GMAJ7      = buildScale([196.00, 246.94, 293.66, 369.99, 392.00, 493.88, 587.33]); // G3 B3 D4 F#4 G4 B4 D5
-const STR_DM7_MID    = buildScale([293.66, 349.23, 440.00, 523.25, 587.33, 698.46, 880.00]); // D4 F4 A4 C5 D5 F5 A5
-const STR_EM7        = buildScale([164.81, 196.00, 246.94, 293.66, 329.63, 392.00, 493.88]); // E3 G3 B3 D4 E4 G4 B4
+// ── 星空夜語 ────────────────────────────────────────
+// 敘事弧線：神秘(Dm9) → 壯美(Gmaj9/Bm7) → 空靈(Bm7b5) → 舒眠(Dm7)
+// 共同音設計：§1→§2: D F A (60%)  §2→§3: D F# A (75%)
+//              §3→§4: D F A (75%)  §4→§1: D F A C (80%)
+const STR_DM9        = buildScale([146.83, 174.61, 220.00, 261.63, 293.66, 349.23, 440.00, 523.25]); // D3 F3 A3 C4 E4 D4 F4 A4 C5
+const STR_GMAJ9      = buildScale([196.00, 246.94, 293.66, 369.99, 392.00, 440.00, 493.88, 587.33]); // G3 B3 D4 F#4 A4 G4 B4 D5
+const STR_BM7        = buildScale([246.94, 293.66, 369.99, 493.88, 587.33, 739.99, 987.77]); // B3 D4 F#4 B4 D5 F#5 B5
+const STR_BM7B5      = buildScale([246.94, 293.66, 349.23, 440.00, 493.88, 587.33, 698.46]); // B3 D4 F4 A4 B4 D5 F5
+const STR_DM7_SLEEP  = buildScale([146.83, 174.61, 220.00, 261.63, 293.66, 349.23, 440.00]); // D3 F3 A3 C4 D4 F4 A4
 
 const TEMPLATES = {
   zen: {
@@ -591,16 +593,16 @@ const TEMPLATES = {
   star: {
     id: 'star',
     label: '星空夜語',
-    desc: '悠長・飄渺・入睡',
-    scale: buildScale(D4, [0, 2, 3, 5, 7, 9, 10]),
+    desc: '神秘・壯美・入夢',
+    scale: buildScale(D3, [0, 2, 4, 5, 7, 9, 11]),
     sections: [
-      { density: 0.20, duration: 50, label: '星・光', scale: STR_DM7_LOW  },
-      { density: 0.40, duration: 45, label: '銀・河', scale: STR_GMAJ7    },
-      { density: 0.30, duration: 35, label: '流・星', scale: STR_DM7_MID  },
-      { density: 0.15, duration: 60, label: '夜・語', scale: STR_EM7      },
+      { density: 0.30, duration: 45, label: '星・光', scale: STR_DM9      },
+      { density: 0.55, duration: 55, label: '銀・河', scale: STR_GMAJ9    },
+      { density: 0.40, duration: 35, label: '流・星', scale: STR_BM7B5    },
+      { density: 0.30, duration: 65, label: '夜・語', scale: STR_DM7_SLEEP },
     ],
-    bpm: 50,
-    reverbDecay: 6.0,
+    bpm: 65,
+    reverbDecay: 5.0,
     voiceHint: 'ceramic',
   },
 };

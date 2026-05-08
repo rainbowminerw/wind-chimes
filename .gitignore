@@ -11,3 +11,10 @@ Thumbs.db
 
 # Temp
 *~
+
+# Backup files
+*_backup.html
+*_before_*.html
+
+# Sample files (too large for repo, only track via base64 embed)
+samples/
