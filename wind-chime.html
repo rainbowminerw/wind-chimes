@@ -1062,11 +1062,14 @@ function scheduleSection(sectionIndex) {
   // ── 段落級淡入淡出 ────────────────────────────
   const SECTION_FADE = 2;  // 淡入淡出秒數
   const useFade = section.duration >= 10;
+  // 從音量滑桿讀取目標音量，避免上一段的 fade out 影響
+  const targetVol = parseInt(volumeSlider ? volumeSlider.value : 50, 10) / 100;
   if (useFade && masterGain) {
-    // 取目前 masterGain 目標值（音量滑桿決定），淡入 2 秒到達
-    const targetVol = masterGain.gain.value;
     masterGain.gain.setValueAtTime(0, Tone.now());
     masterGain.gain.rampTo(targetVol, SECTION_FADE);
+  } else if (masterGain) {
+    // 短段落不用 fade，直接設定音量（防止被上一段 fade out 拉低）
+    masterGain.gain.setValueAtTime(targetVol, Tone.now());
   }
 
   function scheduleNext() {
