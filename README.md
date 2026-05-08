@@ -81,6 +81,14 @@ avgInterval = 1 / (density × 1.8)
 
 Tone.js 已內嵌於 `wind-chime.html` 檔案中，確保完全離線使用。
 
+### 水晶音效 Sample（Pixabay）
+
+水晶撞擊音效（`samples/crystal_sample.mp3`）使用 **Pixabay License**：
+
+- **來源**：https://pixabay.com/
+- **授權**：Pixabay License — 免費使用，無需標註來源，可用於商業用途
+- **檔案**：已以 base64 內嵌於 `wind-chime.html`，離線播放無須外部載入
+
 ---
 
 ## 🗺️ 預計完成事項
