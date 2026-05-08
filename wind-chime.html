@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎐 風鈴 v0.11</title>
+<title>🎐 風鈴 v0.12</title>
 <style>
 /* ============================================================
    wind-chime.html — 風鈴模擬器
@@ -502,14 +502,17 @@ function buildScale(rootFreq, intervals, octaves = 2) {
 
 const C4 = 261.63, D4 = 293.66, G4 = 392.00;
 
-// ── 禪風和弦音階（7 音 × 純粹和弦音，跨三個八度，最低 D3）──
-// Cmaj7:  C E G B  — 寂靜版偏低(E3~C5)、潮湧版偏高(C4~G5)
-// Dm7:    D F A C  — 風起用，最低 D3
-// Am7:    A C E G  — 餘韻用，最低 A3
-const ZEN_CMAJ7_LOW  = buildScale([164.81, 196.00, 246.94, 261.63, 329.63, 392.00, 523.25]);  // E3 G3 B3 C4 E4 G4 C5
-const ZEN_CMAJ7_HIGH = buildScale([261.63, 329.63, 392.00, 493.88, 523.25, 659.25, 783.99]);  // C4 E4 G4 B4 C5 E5 G5
-const ZEN_DM7        = buildScale([146.83, 174.61, 220.00, 261.63, 293.66, 349.23, 440.00]);  // D3 F3 A3 C4 D4 F4 A4
-const ZEN_AM7        = buildScale([220.00, 261.63, 329.63, 392.00, 440.00, 523.25, 659.25]);  // A3 C4 E4 G4 A4 C5 E5
+// ── 禪風方案 A — 五聲懸浮（v0.12 更新）──
+// §1寂靜: C G D A → §2風起: Am7 → §3潮湧: C G D A(回§1) → §4餘韻: Dm7
+// 每段從 4 核心音×3八度=12音池中選 7 音，保證 4/7 與上段相同
+// §1 寂靜 7 音：C3 D3 G3 A3 C4 D4 G4
+const ZEN_S1 = buildScale([261.63, 293.66, 392.00, 440.00, 523.26, 587.32, 784.00]);
+// §2 風起 7 音：C3 A3 C4 E4 G4 A4 E5
+const ZEN_S2 = buildScale([261.63, 440.00, 523.26, 659.26, 784.00, 880.00, 1318.52]);
+// §3 潮湧 7 音：C3 D3 G3 A3 C4 D4 G4（同§1但多低頻支撐）
+const ZEN_S3 = buildScale([261.63, 293.66, 392.00, 440.00, 523.26, 587.32, 784.00]);
+// §4 餘韻 7 音：D3 F3 A3 C4 D4 F4 A4
+const ZEN_S4 = buildScale([293.66, 349.23, 440.00, 523.26, 587.32, 698.46, 880.00]);
 
 // ── 鄉村花園 — G 大調 ─────────────────────────────────
 // Gmaj7: G B D F# → Am7: A C E G → D7: D F# A C
@@ -543,10 +546,10 @@ const TEMPLATES = {
     // 段落級音階：每個段落可指定自己的 scale，未指定則 fallback 到此
     scale: buildScale(C4, [0, 2, 4, 7, 9]),
     sections: [
-      { density: 0.30, duration: 40, label: '寂・靜', scale: ZEN_CMAJ7_LOW  },
-      { density: 0.55, duration: 50, label: '風・起', scale: ZEN_DM7        },
-      { density: 0.80, duration: 35, label: '潮・湧', scale: ZEN_CMAJ7_HIGH },
-      { density: 0.35, duration: 55, label: '餘・韻', scale: ZEN_AM7        },
+      { density: 0.30, duration: 40, label: '寂・靜', scale: ZEN_S1 },
+      { density: 0.55, duration: 50, label: '風・起', scale: ZEN_S2 },
+      { density: 0.80, duration: 35, label: '潮・湧', scale: ZEN_S3 },
+      { density: 0.35, duration: 55, label: '餘・韻', scale: ZEN_S4 },
     ],
     bpm: 60,
     reverbDecay: 4.5,
@@ -696,7 +699,7 @@ const VOICE_PRESETS = {
     // sampleUrl 相對於 HTML 檔案所在目錄
     sampleUrl: CRYSTAL_SAMPLE,
     params: {
-      playbackRange: [0.7, 1.4],  // 播放速率範圍（0.7x~1.4x，產生音高變化）
+      playbackRange: [0.4, 2.5],  // 播放速率範圍（0.4x~2.5x，產生音高變化）
       volume: 0,                   // Player 預設音量（0dB，但 rampTo 負責動態控制）
     },
   },
@@ -949,7 +952,7 @@ function playNote(freq, velocity = 0.6) {
   const preset = VOICE_PRESETS[currentVoice];
   if (preset && preset.synthClass === 'Player') {
     // Player 模式：設 playbackRate 變音高後播放
-    const [lo, hi] = preset.params.playbackRange || [0.7, 1.4];
+    const [lo, hi] = preset.params.playbackRange || [0.4, 2.5];
     const baseFreq = 261.63;
     const rate = Math.max(lo, Math.min(hi, freq / baseFreq));
     if (metalSynth.loaded) {
@@ -994,7 +997,7 @@ function playTapNote() {
   // 輕聲播放，跟主演奏同一顆合成器
   if (VOICE_PRESETS[currentVoice].synthClass === 'Player') {
     // Player 模式輕聲播放
-    const [lo, hi] = VOICE_PRESETS[currentVoice].params.playbackRange || [0.7, 1.4];
+    const [lo, hi] = VOICE_PRESETS[currentVoice].params.playbackRange || [0.4, 2.5];
     const baseFreq = 261.63;
     const rate = Math.max(lo, Math.min(hi, freq / baseFreq));
     if (metalSynth && metalSynth.loaded) {
