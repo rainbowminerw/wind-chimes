@@ -26,7 +26,7 @@ A beautiful wind chime simulator for your desktop.
 
 ## 🚀 使用方式
 
-<p align="center">
+<p align="left">
   <a href="https://rainbowminerw.github.io/wind-chimes/">
     <img src="https://img.shields.io/badge/🎮-線上演示-2ea44f?style=for-the-badge&logo=google-chrome&logoColor=white" alt="線上演示">
   </a>
@@ -36,7 +36,8 @@ A beautiful wind chime simulator for your desktop.
   </a>
 </p>
 
-直接在瀏覽器打開 `wind-chime.html`，點擊「開始」按鈕即可。
+由上面按鈕直接開啟演示；
+或下載後，直接在瀏覽器打開 `wind-chime.html`，點擊「開始」按鈕即可。
 
 技術要求：支援 Web Audio API 的現代瀏覽器（Chrome、Firefox、Edge、Safari）。
 
