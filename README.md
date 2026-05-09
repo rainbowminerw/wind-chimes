@@ -1,5 +1,9 @@
 # 🎐 風鈴 v0.14 — Wind Chime Simulator
 
+[![Live Demo](https://img.shields.io/badge/🎐-Live%20Demo-blue)](https://rainbowminerw.github.io/wind-chimes/)
+[![Download](https://img.shields.io/badge/⬇️-Download-green)](https://github.com/rainbowminerw/wind-chimes/raw/main/wind-chime.html)
+[![GitHub](https://img.shields.io/badge/GitHub-Repo-181717?logo=github)](https://github.com/rainbowminerw/wind-chimes)
+
 A beautiful wind chime simulator for your desktop.
 
 一款優美的桌面風鈴模擬器，基於 Web Audio API 打造，完全離線使用。模擬風鈴隨機敲擊的聲音，配合玻璃質感 UI 與動態光球視覺效果，創造永不重複的聽覺體驗。
