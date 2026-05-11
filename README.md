@@ -20,13 +20,13 @@ A beautiful desktop wind chime simulator built with Web Audio API, fully offline
 
 四種風格一鍵切換 ｜ Four scene styles, one-click switch:
 
-- **🧘 禪風冥想 / Zen Meditation** — 五聲懸浮和弦（C G D A / Am7 / Dm7），中式靜心
+- **🧘 禪風冥想 / Zen Meditation** — 五聲懸浮和弦（C G D A / Am7 / Dm7），中式靜心<br>
   Pentatonic suspended chords (C G D A / Am7 / Dm7), Chinese zen-style tranquility
-- **🌻 鄉村花園 / Country Garden** — G 大調 Gmaj7 / Am7 / D7，輕快活潑
+- **🌻 鄉村花園 / Country Garden** — G 大調 Gmaj7 / Am7 / D7，輕快活潑<br>
   G major Gmaj7 / Am7 / D7, bright and cheerful
-- **🎷 Jazz Ambient** — Melodic Minor CmM7 / Fm7 / Dm7b5，慵懶深夜
+- **🎷 Jazz Ambient** — Melodic Minor CmM7 / Fm7 / Dm7b5，慵懶深夜<br>
   Melodic Minor CmM7 / Fm7 / Dm7b5, languid late-night vibe
-- **🌌 星空夜語 / Starry Night** — 敘事弧線：神秘(Dm9) → 壯美(Gmaj9) → 空靈(Bm7b5) → 舒眠(Dm7)
+- **🌌 星空夜語 / Starry Night** — 敘事弧線：神秘(Dm9) → 壯美(Gmaj9) → 空靈(Bm7b5) → 舒眠(Dm7)<br>
   Narrative arc: Mysterious(Dm9) → Grand(Gmaj9) → Ethereal(Bm7b5) → Slumber(Dm7)
 
 ### 🌬️ 自然風效果 / Natural Wind Effect
@@ -108,22 +108,22 @@ avgInterval = 1 / (density × 1.8)
 
 ### 風速系統 / Wind System
 
-- **Perlin Noise 1D** 兩層疊加（慢層 8s×0.35 + 快層 3s×0.65）
+- **Perlin Noise 1D** 兩層疊加（慢層 8s×0.35 + 快層 3s×0.65）<br>
   Two-layer overlay (slow 8s×0.35 + fast 3s×0.65)
-- **S 曲線對比度拉伸**，解決常態分布中間值過多的問題
+- **S 曲線對比度拉伸**，解決常態分布中間值過多的問題<br>
   S-curve contrast stretching to mitigate normal distribution clustering
-- 風速（0 ~ 1）映射為 **p 值（1.5 ~ -3.5）**，間隔 × 2^p 調變
+- 風速（0 ~ 1）映射為 **p 值（1.5 ~ -3.5）**，間隔 × 2^p 調變<br>
   Wind speed (0 ~ 1) maps to **p value (1.5 ~ -3.5)**, interval × 2^p modulation
 
 ## 🛡️ 安全性與隱私 / Security & Privacy
 
-- **無外部引用**：所有依賴（Tone.js）已內嵌於單一 HTML 檔案中
+- **無外部引用**：所有依賴（Tone.js）已內嵌於單一 HTML 檔案中<br>
   **No external references**: All dependencies (Tone.js) are embedded in the single HTML file
-- **無資訊蒐集**：不發送任何統計、追蹤或分析資料
+- **無資訊蒐集**：不發送任何統計、追蹤或分析資料<br>
   **No data collection**: No analytics, tracking, or telemetry
-- **無須聯網**：開啟後可完全離線使用
+- **無須聯網**：開啟後可完全離線使用<br>
   **No network required**: Works fully offline after opening
-- **不向外傳遞資訊**：程式碼中沒有任何網路請求
+- **不向外傳遞資訊**：程式碼中沒有任何網路請求<br>
   **No outbound communication**: Zero network requests in the code
 
 ## 📂 相關檔案 / Related Files
@@ -155,7 +155,7 @@ This project uses the following open-source projects and resources, to which we 
 
 Audio engine core, providing high-level Web Audio API abstractions and synthesizer capabilities.
 
-- **作者 / Author**：Yotam Mann 與 Tone.js 社群 / Yotam Mann & the Tone.js community
+- **作者 / Author**：Yotam Mann 與 Tone.js 社群 ｜ Yotam Mann & the Tone.js community
 - **授權 / License**：MIT License
 - **官網 / Website**：https://tonejs.github.io/
 - **Copyright**：© 2014-2019 Yotam Mann
@@ -172,9 +172,9 @@ Tone.js is embedded in `wind-chime.html` for fully offline use.
 Crystal strike sound effect licensed under **Pixabay License**:
 
 - **來源 Source**：https://pixabay.com/
-- **授權 License**：Pixabay License — 免費使用，無需標註來源，可用於商業用途
+- **授權 License**：Pixabay License — 免費使用，無需標註來源，可用於商業用途<br>
   Free to use, no attribution required, commercial use allowed
-- **檔案 File**：已以 base64 內嵌於 `wind-chime.html`，離線播放無須外部載入
+- **檔案 File**：已以 base64 內嵌於 `wind-chime.html`，離線播放無須外部載入<br>
   Embedded as base64 in `wind-chime.html`, no external loading needed
 
 ---
@@ -216,17 +216,17 @@ Crystal strike sound effect licensed under **Pixabay License**:
 ### 🔜 待規劃 / Planned
 
 - 🎼 **音樂模板擴充機制 / Template Expansion**
-  - 模板定義系統：音階、節奏型態、段落結構的模組化設計
+  - 模板定義系統：音階、節奏型態、段落結構的模組化設計<br>
     Modular template definition: scales, rhythm patterns, section structures
-  - 可載入外部模板檔案（JSON 格式），讓使用者自訂
+  - 可載入外部模板檔案（JSON 格式），讓使用者自訂<br>
     External JSON template loading for user customization
-  - 預設模板：禪風、自然、夢幻、沉靜等多種風格
+  - 預設模板：禪風、自然、夢幻、沉靜等多種風格<br>
     Default templates: Zen, Nature, Dreamy, Silent...
 
 - 🎚️ **音色優化 / Timbre Refinement**
-  - 各音色增加微妙的隨機變化（pitch drift、輕微失諧）
+  - 各音色增加微妙的隨機變化（pitch drift、輕微失諧）<br>
     Subtle randomization per timbre (pitch drift, slight detuning)
-  - ✅ 取樣音（sample-based）混合 — 水晶音效已實現
+  - ✅ 取樣音（sample-based）混合 — 水晶音效已實現<br>
     Sample-based mixing — Crystal already implemented
 
 ---
