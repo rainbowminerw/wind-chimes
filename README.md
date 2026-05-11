@@ -18,7 +18,7 @@ A beautiful desktop wind chime simulator built with Web Audio API, fully offline
 
 ### 🎼 場景模板系統 / Scene Template System
 
-四種風格一鍵切換 — Four scene styles, one-click switch:
+四種風格一鍵切換 ｜ Four scene styles, one-click switch:
 
 - **🧘 禪風冥想 / Zen Meditation** — 五聲懸浮和弦（C G D A / Am7 / Dm7），中式靜心
   Pentatonic suspended chords (C G D A / Am7 / Dm7), Chinese zen-style tranquility
@@ -37,7 +37,7 @@ Two-layer Perlin Noise (periods 8s + 3s) with S-curve contrast stretching. Smoot
 
 ### 🎵 五種音色 / Five Timbres
 
-玻璃 Glass、💎水晶 Crystal（真實 Sample）、陶瓷 Ceramic、木質 Wood、敲弦 FMSynth
+玻璃 Glass ｜ 💎水晶 Crystal（真實 Sample） ｜ 陶瓷 Ceramic ｜ 木質 Wood ｜ 敲弦 FMSynth
 
 ### 🌊 四個段落 / Four Sections
 
@@ -130,12 +130,12 @@ avgInterval = 1 / (density × 1.8)
 
 | 檔案 File | 說明 Description |
 |-----------|-----------------|
-| `wind-chime.html` | 主程式（單一 HTML）Main program (single HTML) |
-| `00_前期研究.md` | 完整研究記錄、數學原理、實作決策 Research notes, math, implementation decisions |
-| `README.md` | 本檔案 — 快速入門與功能概覽 This file — quick start & overview |
-| `端點拉伸加成_說明.md` | 端點拉伸（冪次映射）數學原理 Endpoint stretching (power mapping) math |
-| `端點拉伸演示.html` | 可互動的端點拉伸演示工具 Interactive endpoint stretching demo |
-| `LICENSE` | MIT 授權條款 MIT License |
+| `wind-chime.html` | 主程式（單一 HTML）／ Main program (single HTML) |
+| `00_前期研究.md` | 完整研究記錄、數學原理、實作決策 ／ Research notes, math, implementation decisions |
+| `README.md` | 本檔案 — 快速入門與功能概覽 ／ This file — quick start & overview |
+| `端點拉伸加成_說明.md` | 端點拉伸（冪次映射）數學原理 ／ Endpoint stretching (power mapping) math |
+| `端點拉伸演示.html` | 可互動的端點拉伸演示工具 ／ Interactive endpoint stretching demo |
+| `LICENSE` | MIT 授權條款 ／ MIT License |
 
 ## 📜 授權 / License
 
@@ -155,11 +155,11 @@ This project uses the following open-source projects and resources, to which we 
 
 Audio engine core, providing high-level Web Audio API abstractions and synthesizer capabilities.
 
-- **作者 Author**：Yotam Mann 與 Tone.js 社群 / Yotam Mann & the Tone.js community
-- **授權 License**：MIT License
-- **官網 Website**：https://tonejs.github.io/
+- **作者 / Author**：Yotam Mann 與 Tone.js 社群 / Yotam Mann & the Tone.js community
+- **授權 / License**：MIT License
+- **官網 / Website**：https://tonejs.github.io/
 - **Copyright**：© 2014-2019 Yotam Mann
-- **原始碼 Source**：https://github.com/Tonejs/Tone.js
+- **原始碼 / Source**：https://github.com/Tonejs/Tone.js
 
 Tone.js 已內嵌於 `wind-chime.html` 檔案中，確保完全離線使用。
 
@@ -181,7 +181,7 @@ Crystal strike sound effect licensed under **Pixabay License**:
 
 ## 🗺️ 預計完成事項 / Roadmap
 
-> ⚠️ **開發者註 Developer Note：** 目前效果還不成熟，聽感更接近即興彈奏而非真實風鈴。
+> ⚠️ **開發者註 / Developer Note：** 目前效果還不成熟，聽感更接近即興彈奏而非真實風鈴。
 > 風鈴模擬需要更細緻的物理模型與取樣音才能達到一陣一陣連續清脆聲的自然效果。
 > 目前仍在實驗階段，請放寬心聆聽 🎐
 >
