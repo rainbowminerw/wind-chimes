@@ -112,8 +112,8 @@ avgInterval = 1 / (density × 1.8)
   Two-layer overlay (slow 8s×0.35 + fast 3s×0.65)
 - **S 曲線對比度拉伸**，解決常態分布中間值過多的問題
   S-curve contrast stretching to mitigate normal distribution clustering
-- 風速（0~1）映射為 **p 值（1.5 ~ -3.5）**，間隔 × 2^p 調變
-  Wind speed (0~1) maps to **p value (1.5 ~ -3.5)**, interval × 2^p modulation
+- 風速（0 ~ 1）映射為 **p 值（1.5 ~ -3.5）**，間隔 × 2^p 調變
+  Wind speed (0 ~ 1) maps to **p value (1.5 ~ -3.5)**, interval × 2^p modulation
 
 ## 🛡️ 安全性與隱私 / Security & Privacy
 
