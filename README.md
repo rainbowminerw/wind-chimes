@@ -67,13 +67,11 @@ Speed slider, volume, timbre, reverb — auto-sync when switching templates.
 
 <p align="left">
   <a href="https://rainbowminerw.github.io/wind-chimes/">
-    <img src="https://img.shields.io/badge/🎮-線上演示-2ea44f?style=for-the-badge&logo=google-chrome&logoColor=white" alt="線上演示">
-    <img src="https://img.shields.io/badge/🕹️-Live%20Demo-2ea44f?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Live Demo">
+    <img src="https://img.shields.io/badge/🎮-線上演示%20Live%20Demo-2ea44f?style=for-the-badge&logo=google-chrome&logoColor=white" alt="線上演示 Live Demo">
   </a>
   &nbsp;&nbsp;
   <a href="https://github.com/rainbowminerw/wind-chimes/raw/main/wind-chime.html">
-    <img src="https://img.shields.io/badge/⬇️-下載檔案-0077b6?style=for-the-badge&logo=files&logoColor=white" alt="下載">
-    <img src="https://img.shields.io/badge/⬇️-Download-0077b6?style=for-the-badge&logo=files&logoColor=white" alt="Download">
+    <img src="https://img.shields.io/badge/⬇️-下載檔案%20Download-0077b6?style=for-the-badge&logo=files&logoColor=white" alt="下載檔案 Download">
   </a>
 </p>
 
